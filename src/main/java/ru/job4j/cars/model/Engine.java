@@ -1,20 +1,22 @@
 package ru.job4j.cars.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "price_histories")
+@Table(name = "engines")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PriceHistory {
+public class Engine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int id;
-    private long before;
-    private long after;
-    private LocalDateTime created;
+    private String name;
 }

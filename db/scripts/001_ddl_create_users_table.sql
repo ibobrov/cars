@@ -1,4 +1,4 @@
-CREATE TABLE auto_user (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     login VARCHAR UNIQUE NOT NULL,
     password VARCHAR NOT NULL

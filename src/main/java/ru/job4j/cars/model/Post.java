@@ -1,17 +1,21 @@
 package ru.job4j.cars.model;
 
 import com.sun.istack.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "auto_post")
+@Table(name = "posts")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Post {
     @Id
@@ -21,17 +25,20 @@ public class Post {
     @NotNull
     private String description;
     @NotNull
+    @Column(name = "creation_date")
     private LocalDateTime creationDate;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Car car;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "auto_post_id")
-    private List<PriceHistory> priceHistories = new ArrayList<>();
+    @JoinColumn(name = "post_id")
+    private Set<PriceHistory> priceHistories = new HashSet<>();
     @ManyToMany
     @JoinTable(
             name = "participates",
             joinColumns = { @JoinColumn(name = "post_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") }
     )
-    private List<User> participates = new ArrayList<>();
+    private Set<User> participates = new HashSet<>();
 }

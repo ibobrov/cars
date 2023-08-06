@@ -1,0 +1,4 @@
+CREATE TABLE engines (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL
+);
