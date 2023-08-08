@@ -37,6 +37,10 @@ public class CrudRepository {
         run(command);
     }
 
+    public <T> List<T> runAndBack(Function<Session, List<T>> command) {
+        return tx(command);
+    }
+
     public <T> Optional<T> optional(String query, Class<T> cl, Map<String, Object> args) {
         Function<Session, Optional<T>> command = session -> {
             var sq = session
