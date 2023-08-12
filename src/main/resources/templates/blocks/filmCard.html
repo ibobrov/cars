@@ -1,0 +1,71 @@
+<div class="p-4 pb-0 rounded-3 border shadow-lg" th:fragment="filmCard">
+	<div class="row mb-4">
+		<div class="col-md-5 themed-grid-col">
+			<img class="rounded-lg-3" th:src="@{/files/{fileId}(fileId=${film.getFileId()})}" width="100%" alt="poster">
+		</div>
+		<div class="col-md-7 themed-grid-col">
+			<div class="row">
+				<div>
+					<h1 class="fw-bold text-center" th:text="${film.name}"></h1>
+					<div class="text-end p-md-4">
+						<span>Year: </span>
+						<span class="text-primary p-1" th:text="${film.year}"></span>
+						<span>Genre: </span>
+						<span class="text-primary p-1" th:text="${film.getGenre()}"></span>
+						<span>Age+: </span>
+						<span class="text-primary p-1" th:text="${film.minimalAge}"></span>
+						<span>Duration: </span>
+						<span class="text-primary" th:text="${film.durationInMinutes}"></span>
+					</div>
+				</div>
+				<div>
+					<div class="lead">
+						<p th:text="${film.description}"></p>
+					</div>
+				</div>
+				<div class="pt-3 rounded-5 border-3 m-1">
+					<table class="table table-light">
+						<thead>
+						<tr>
+							<th scope="col">Date</th>
+							<th scope="col">Start - End</th>
+							<th scope="col">Hall</th>
+							<th scope="col">Price</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="filmSession : ${filmSessions}">
+							<td>
+											<span th:text="${filmSession.getStartTime().toLocalDate().getDayOfMonth()} + ' '
+																	 + ${filmSession.getStartTime().toLocalDate().getMonth()} + ' '
+											             + ${filmSession.getStartTime().toLocalDate().getYear()}"></span>
+							</td>
+							<td>
+								<span th:text="${filmSession.getStartTime().toLocalTime()} + '-' + ${filmSession.getEndTime().toLocalTime()}"></span>
+							</td>
+							<td>
+								<span th:text="${filmSession.getHall().name}"></span>
+							</td>
+							<td>
+								<a th:href="@{/sessions/{sessionId}(sessionId=${filmSession.id})}">
+									<span th:text="${filmSession.getPrice()}"></span><span>$</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row container pb-3">
+				<div class="col-3"></div>
+				<div class="col-sm-3 mb-1">
+					<div class="w-100 btn btn-light btn-lg" type="button" onclick="window.history.back()">Back</div>
+				</div>
+				<div class="col-sm-3">
+					<a class="w-100 btn btn-light btn-lg" type="button" href="/">Home</a>
+				</div>
+				<div class="col-3"></div>
+			</div>
+		</div>
+	</div>
+</div>

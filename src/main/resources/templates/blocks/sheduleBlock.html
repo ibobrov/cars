@@ -1,0 +1,41 @@
+<div class="col" th:fragment="shedulerBlock(title, sessions)">
+	<div class="card mb-4 rounded-3 shadow-sm">
+		<div class="card-header py-3">
+			<h4 class="my-0 fw-normal" th:text="${title}"></h4>
+		</div>
+		<div class="card-body">
+			<div class="bd-example-snippet bd-code-snippet">
+				<div class="bd-example m-0 border-0">
+					<table class="table table-striped">
+						<thead>
+						<tr>
+							<th scope="col">Hall</th>
+							<th scope="col">Start - End</th>
+							<th scope="col">Film</th>
+							<th scope="col">Price</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="filmSession : ${sessions}">
+							<td>
+								<span th:text="${filmSession.getHall().name}"></span>
+							</td>
+							<td>
+								<span th:text="${filmSession.getStartTime().toLocalTime()} + '-' + ${filmSession.getEndTime().toLocalTime()}"></span>
+							</td>
+							<td>
+								<a th:text="${filmSession.getFilm().name}" th:href="@{/films/{filmId}(filmId=${filmSession.getFilm().id})}"></a>
+							</td>
+							<td>
+								<a th:href="@{/sessions/{sessionId}(sessionId=${filmSession.id})}">
+									<span th:text="${filmSession.getPrice()}"></span><span>$</span>
+								</a>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

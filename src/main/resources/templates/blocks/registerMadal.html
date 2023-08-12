@@ -1,0 +1,53 @@
+<div class="modal fade" id="signup" tabindex="-1" th:fragment="sign">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content rounded-4 shadow">
+			<div class="modal-header p-5 pb-4 border-bottom-0">
+				<h1 class="fw-bold mb-0 fs-2">Sign up for free</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+
+			<div class="modal-body p-5 pt-0">
+				<form class="mt-3" th:action="@{/users/register}" method="post">
+					<div class="mb-3" th:if="${error}">
+						<p class="text-danger" th:text="${error}"></p>
+					</div>
+
+					<div class="mb-3">
+						<label for="name" class="form-label">
+							<b>Name</b>
+						</label>
+						<input type="text" class="form-control" id="name" name="fullName" placeholder="Harry Shelton" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="email" class="form-label">
+							<b>Mail</b>
+						</label>
+						<input type="email" class="form-control" id="email" name="email" placeholder="harry.shelton@mail.ru" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="password" class="form-label">
+							<b>Password</b>
+						</label>
+						<input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+					</div>
+
+					<div class="mb-3 row">
+						<div class="col-8">
+							<p>Registered?
+								<span>
+										<a class="pe-3" th:href="@{/users/login}">Login</a>
+									</span>
+							</p>
+						</div>
+
+						<div class="col-lg-4">
+							<button class="btn btn-primary w-100" type="submit">Continue</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
