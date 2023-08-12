@@ -21,6 +21,8 @@ public class Car {
     @EqualsAndHashCode.Include
     private int id;
     private String name;
+    @Column(name = "car_year")
+    private int year;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "engine_id")
     private Engine engine;

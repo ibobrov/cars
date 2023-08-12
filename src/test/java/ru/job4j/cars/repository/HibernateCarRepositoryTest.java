@@ -72,7 +72,7 @@ class HibernateCarRepositoryTest {
 
     @Test
     public void whenSaveCarThenFindByIdSame() {
-        var car = new Car(-1, "toyota supra", staticEngine, staticOwner1,
+        var car = new Car(-1, "toyota supra", 1998, staticEngine, staticOwner1,
                 Set.of(staticOwner1, staticOwner2));
         carRepo.save(car);
         assertThat(carRepo.findById(car.getId()).get()).isEqualTo(car);
@@ -85,7 +85,7 @@ class HibernateCarRepositoryTest {
 
     @Test
     public void whenSaveAndDeleteCarThenDeleteReturnTrueAndFindByIdEmpty() {
-        var car = new Car(-1, "toyota supra", staticEngine, staticOwner1,
+        var car = new Car(-1, "toyota supra", 1998, staticEngine, staticOwner1,
                 Set.of(staticOwner1, staticOwner2));
         carRepo.save(car);
         var isDelete = carRepo.delete(car.getId());
@@ -101,10 +101,10 @@ class HibernateCarRepositoryTest {
 
     @Test
     public void whenSaveAndUpdateCarThenFindUpdated() {
-        var car = new Car(-1, "toyota supra", staticEngine, staticOwner1,
+        var car = new Car(-1, "toyota supra", 1998, staticEngine, staticOwner1,
                 Set.of(staticOwner1));
         carRepo.save(car);
-        var carV2 = new Car(car.getId(), "toyota supra", staticEngine, staticOwner2,
+        var carV2 = new Car(car.getId(), "toyota supra", 1998, staticEngine, staticOwner2,
                 Set.of(staticOwner1, staticOwner2));
         var isUpdate = carRepo.update(carV2);
         assertThat(isUpdate).isTrue();
