@@ -7,7 +7,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     <include file="scripts/001_ddl_create_users_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/002_ddl_create_posts_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/003_dml_insert_auto_users_data.sql" relativeToChangelogFile="true"/>
     <include file="scripts/004_ddl_create_price_history_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/005_ddl_create_participates_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/006_ddl_create_engines_table.sql" relativeToChangelogFile="true"/>
@@ -18,5 +17,4 @@
     <include file="scripts/011_ddl_create_files_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/012_ddl_create_post_files_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/013_ddl_add_column_year_to_car_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/014_dml_insert_post_for_demo.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
