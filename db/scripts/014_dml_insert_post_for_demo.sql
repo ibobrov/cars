@@ -43,3 +43,8 @@ INSERT INTO price_histories(before, after, post_id)  VALUES (0, 35400, 4);
 INSERT INTO post_files(post_id, file_id) VALUES (4, 10);
 INSERT INTO post_files(post_id, file_id) VALUES (4, 11);
 INSERT INTO post_files(post_id, file_id) VALUES (4, 12);
+
+INSERT INTO history_owners(owners_id, car_id) VALUES (1, 1);
+INSERT INTO history_owners(owners_id, car_id) VALUES (1, 2);
+INSERT INTO history_owners(owners_id, car_id) VALUES (1, 3);
+INSERT INTO history_owners(owners_id, car_id) VALUES (1, 4);
