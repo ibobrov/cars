@@ -1,6 +1,8 @@
 package ru.job4j.cars.repository;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.Car;
 
@@ -13,6 +15,7 @@ import static java.util.Optional.empty;
 @Repository
 @AllArgsConstructor
 public class HibernateCarRepository implements CarRepository {
+    private final Logger logger = LoggerFactory.getLogger(HibernateCarRepository.class);
     private final CrudRepository crudRepo;
     private final static String FIND_BY_ID = """
                                               SELECT DISTINCT c
@@ -35,7 +38,7 @@ public class HibernateCarRepository implements CarRepository {
         try {
             crudRepo.run(session -> session.save(car));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return car;
     }
@@ -47,7 +50,7 @@ public class HibernateCarRepository implements CarRepository {
             crudRepo.run(session -> session.update(car));
             rsl = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -58,7 +61,7 @@ public class HibernateCarRepository implements CarRepository {
         try {
             rsl = crudRepo.executeUpdate("DELETE FROM Car WHERE id = :id", Map.of("id", id)) > 0;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -69,7 +72,7 @@ public class HibernateCarRepository implements CarRepository {
         try {
             rsl = crudRepo.optional(FIND_BY_ID, Car.class, Map.of("id", id));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -80,7 +83,7 @@ public class HibernateCarRepository implements CarRepository {
         try {
             rsl = crudRepo.query(GET_ALL, Car.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }

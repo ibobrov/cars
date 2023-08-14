@@ -2,6 +2,8 @@ package ru.job4j.cars.repository;
 
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.util.TriConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.Post;
 
@@ -19,6 +21,7 @@ import static java.util.Optional.empty;
 @Repository
 @AllArgsConstructor
 public class HibernatePostRepository implements PostRepository {
+    private final Logger logger = LoggerFactory.getLogger(HibernatePostRepository.class);
     private final CrudRepository crudRepo;
     private final static String FIND_BY_ID = """
                                               SELECT DISTINCT p
@@ -45,7 +48,7 @@ public class HibernatePostRepository implements PostRepository {
         try {
             crudRepo.run(session -> session.save(post));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return post;
     }
@@ -57,7 +60,7 @@ public class HibernatePostRepository implements PostRepository {
             crudRepo.run(session -> session.update(post));
             rsl = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -68,7 +71,7 @@ public class HibernatePostRepository implements PostRepository {
         try {
             rsl = crudRepo.executeUpdate("DELETE FROM Post WHERE id = :id", Map.of("id", id)) > 0;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -79,7 +82,7 @@ public class HibernatePostRepository implements PostRepository {
         try {
             rsl = crudRepo.optional(FIND_BY_ID, Post.class, Map.of("id", id));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -90,7 +93,7 @@ public class HibernatePostRepository implements PostRepository {
         try {
             rsl = crudRepo.query(GET_ALL, Post.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -143,7 +146,7 @@ public class HibernatePostRepository implements PostRepository {
                 return session.createQuery(criteriaQuery).getResultList();
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }

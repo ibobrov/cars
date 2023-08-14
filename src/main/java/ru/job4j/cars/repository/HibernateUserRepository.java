@@ -1,6 +1,8 @@
 package ru.job4j.cars.repository;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.User;
 
@@ -13,6 +15,7 @@ import static java.util.Optional.empty;
 @Repository
 @AllArgsConstructor
 public class HibernateUserRepository implements UserRepository {
+    private final Logger logger = LoggerFactory.getLogger(HibernateUserRepository.class);
     private CrudRepository crudRepo;
 
     @Override
@@ -20,7 +23,7 @@ public class HibernateUserRepository implements UserRepository {
         try {
             crudRepo.run(session -> session.save(user));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return user;
     }
@@ -32,7 +35,7 @@ public class HibernateUserRepository implements UserRepository {
             crudRepo.run(session -> session.update(user));
             rsl = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -44,7 +47,7 @@ public class HibernateUserRepository implements UserRepository {
             rsl = crudRepo.executeUpdate("DELETE FROM User WHERE id = :id",
                     Map.of("id", id)) > 0;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -56,7 +59,7 @@ public class HibernateUserRepository implements UserRepository {
             rsl = crudRepo.optional("FROM User WHERE id = :id", User.class,
                     Map.of("id", id));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -69,7 +72,7 @@ public class HibernateUserRepository implements UserRepository {
                     "FROM User WHERE login = :login AND password = :password",
                     User.class, Map.of("login", login, "password", password));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -80,7 +83,7 @@ public class HibernateUserRepository implements UserRepository {
         try {
             rsl = crudRepo.query("FROM User", User.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }

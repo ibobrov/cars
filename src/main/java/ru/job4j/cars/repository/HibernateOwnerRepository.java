@@ -1,6 +1,8 @@
 package ru.job4j.cars.repository;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.Owner;
 
@@ -13,6 +15,7 @@ import static java.util.Optional.empty;
 @Repository
 @AllArgsConstructor
 public class HibernateOwnerRepository implements OwnerRepository {
+    private final Logger logger = LoggerFactory.getLogger(HibernateOwnerRepository.class);
     private final CrudRepository crudRepo;
 
     @Override
@@ -20,7 +23,7 @@ public class HibernateOwnerRepository implements OwnerRepository {
         try {
             crudRepo.run(session -> session.save(owner));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return owner;
     }
@@ -32,7 +35,7 @@ public class HibernateOwnerRepository implements OwnerRepository {
             crudRepo.run(session -> session.update(owner));
             rsl = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -43,7 +46,7 @@ public class HibernateOwnerRepository implements OwnerRepository {
         try {
             rsl = crudRepo.executeUpdate("DELETE FROM Owner WHERE id = :id", Map.of("id", id)) > 0;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -54,7 +57,7 @@ public class HibernateOwnerRepository implements OwnerRepository {
         try {
             rsl = crudRepo.optional("FROM Owner o JOIN FETCH o.user WHERE o.id = :id", Owner.class, Map.of("id", id));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
@@ -65,7 +68,7 @@ public class HibernateOwnerRepository implements OwnerRepository {
         try {
             rsl = crudRepo.query("FROM Owner o JOIN FETCH o.user", Owner.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return rsl;
     }
