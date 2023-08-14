@@ -1,1 +1,0 @@
-ALTER TABLE cars ADD COLUMN car_year INT;

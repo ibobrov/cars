@@ -1,0 +1,2 @@
+ALTER TABLE cars ADD COLUMN car_year INT;
+ALTER TABLE cars ADD COLUMN odometer INT;

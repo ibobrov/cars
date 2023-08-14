@@ -54,10 +54,10 @@ class HibernatePostRepositoryTest {
         staticEngine2 = new Engine(-1, "4,6is");
         engineRepo.save(staticEngine1);
         engineRepo.save(staticEngine2);
-        staticCar1 = new Car(-1, "toyota supra", 1998, staticEngine1, staticOwner,
-                Set.of(staticOwner));
-        staticCar2 = new Car(-1, "bmw x5", 2006, staticEngine2, staticOwner,
-                Set.of(staticOwner));
+        staticCar1 = new Car(-1, "toyota supra", 1998, 62563, staticEngine1,
+                staticOwner, Set.of(staticOwner));
+        staticCar2 = new Car(-1, "bmw x5", 2006, 12543, staticEngine2,
+                staticOwner, Set.of(staticOwner));
         carRepo.save(staticCar1);
         carRepo.save(staticCar2);
         staticFile = new File(-1, "name", "path");

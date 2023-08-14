@@ -1,11 +1,41 @@
-<div>
-	<h5 th:text="'id = ' + ${post.id}"></h5>
-	<h5 th:text=" 'description = ' + ${post.description}"></h5>
-	<h5 th:text=" 'creationDate = ' + ${post.creationDate}"></h5>
-	<h5 th:text=" 'countOwners = ' + ${post.countOwners}"></h5>
-	<h5 th:text=" 'carName = ' + ${post.carName}"></h5>
-	<h5 th:text=" 'carPrice = ' + ${post.carPrice}"></h5>
-	<h5 th:text=" 'carYear = ' + ${post.carYear}"></h5>
-	<h5 th:text=" 'isOwner = ' + ${post.isOwner}"></h5>
-	<h5 th:text=" 'Photo Ids = ' + ${post.photoIds}"></h5>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+	<link th:href="@{/css/bootstrap.5.3.0/bootstrap.css}" rel="stylesheet">
+	<script th:src="@{/js/popper.2.11.8.umd/popper.min.js}"></script>
+	<script th:src="@{/js/bootstrap.5.3.0/bootstrap.min.js}"></script>
+	<title th:text="${post.carName}"></title>
+</head>
+<body>
+<div class="container-fluid p-0">
+	<div th:insert="blocks/header :: header"></div>
+	<div th:insert="blocks/loginModal :: login"></div>
+	<div th:insert="blocks/registerMadal :: sign"></div>
+
+	<div class="album py-2 bg-body-tertiary">
+		<div class="container">
+
+			<div class="p-5">
+				<h5 th:text="'id = ' + ${post.id}"></h5>
+				<h5 th:text=" 'description = ' + ${post.description}"></h5>
+				<h5 th:text=" 'creationDate = ' + ${post.creationDate}"></h5>
+				<h5 th:text=" 'countOwners = ' + ${post.countOwners}"></h5>
+				<h5 th:text=" 'carName = ' + ${post.carName}"></h5>
+				<h5 th:text=" 'carPrice = ' + ${post.carPrice}"></h5>
+				<h5 th:text=" 'carYear = ' + ${post.carYear}"></h5>
+				<h5 th:text=" 'carOdometer = ' + ${post.carOdometer}"></h5>
+				<h5 th:text=" 'carEngine = ' + ${post.carEngine}"></h5>
+				<h5 th:text=" 'isOwner = ' + ${post.isOwner}"></h5>
+				<h5 th:text=" 'photo Ids = ' + ${post.photoIds}"></h5>
+			</div>
+
+		</div>
+	</div>
+
+	<div th:insert="blocks/footer :: footer"></div>
 </div>
+</body>
+</html>

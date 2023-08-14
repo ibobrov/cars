@@ -44,14 +44,21 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 pb-3">
           <div th:each="prev: ${prevPosts}">
             <div class="col">
-              <div class="card shadow-sm" style="height: 310px">
-                <a th:href="@{/posts/{postId}(postId=${prev.postId()})}">
+              <div class="card shadow-sm" style="height: 320px">
+                <a th:href="@{/posts/{postId}(postId=${prev.id})}">
                   <img class="bd-placeholder-img card-img-top object-fit-contain" width="auto"
-                       height="200px" th:src="@{/files/{fileId}(fileId=${prev.fileId})}" alt="post image">
+                       height="170px" th:src="@{/files/{fileId}(fileId=${prev.photoId})}" alt="post image">
                 </a>
                 <div class="card-body">
-                  <h5 th:text="'$' + ${#strings.replace(#numbers.formatCurrency(prev.price()), ',00&nbsp;¤', '')}"></h5>
-                  <span th:text="${prev.title()}"></span>
+                  <div class="row">
+                    <div class="col">
+                      <h5 th:text="'$' + ${#strings.replace(#numbers.formatCurrency(prev.carPrice), ',00&nbsp;¤', '')}"></h5>
+                    </div>
+                    <div class="col">
+                      <span th:text="${prev.odometer} + ' km'"></span><br>
+                    </div>
+                  </div>
+                  <span class="text-body-tertiary" th:text="${prev.title}"></span>
                 </div>
               </div>
             </div>

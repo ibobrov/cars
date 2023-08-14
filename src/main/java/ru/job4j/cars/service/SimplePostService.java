@@ -10,7 +10,6 @@ import ru.job4j.cars.model.PriceHistory;
 import ru.job4j.cars.repository.CarRepository;
 import ru.job4j.cars.repository.PostRepository;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -20,38 +19,37 @@ import java.util.Optional;
 public class SimplePostService implements PostService {
     private final PostRepository postRepo;
     private final CarRepository carRepo;
-    private static final Comparator<PriceHistory> BY_CREATED = Comparator.comparing(PriceHistory::getCreated);
+    private static final Comparator<PriceHistory> PRICE_HISTORY_COMPARATOR =
+            Comparator.comparing(PriceHistory::getCreated);
 
     @Override
     public Optional<PostDto> findById(int id) {
-        Optional<PostDto> rsl = Optional.empty();
-        var postOpt = postRepo.findById(id);
-        if (postOpt.isPresent()) {
-            rsl = Optional.of(
-                    assemblePostDto(postOpt.get())
-            );
-        }
-        return rsl;
+        return postRepo.findById(id).map(this::assemblePostDto);
     }
 
     @Override
     public List<PostPreview> getAll() {
-        var rsl = new ArrayList<PostPreview>();
-        for (var post : postRepo.getAll()) {
-            rsl.add(assemblePostPreview(post));
-        }
-        return rsl;
+        return postRepo.getAll().stream().map(this::assemblePostPreview).toList();
     }
 
     private PostPreview assemblePostPreview(Post post) {
-        var lastPriceHistory = post.getPriceHistories()
-                                    .stream()
-                                    .max(BY_CREATED);
-        var price = lastPriceHistory.map(PriceHistory::getAfter).orElse(0L);
-        var firstPhoto = post.getFiles().stream().min(Comparator.comparing(File::getId));
-        var photoId = firstPhoto.map(File::getId).orElse(0);
-        return new PostPreview(post.getId(), post.getCar().getYear() + " " + post.getCar().getName(),
-                price, photoId);
+        return PostPreview.of()
+                .id(post.getId())
+                .title(post.getCar().getYear() + " " + post.getCar().getName())
+                .odometer(post.getCar().getOdometer())
+                .carPrice(
+                        post.getPriceHistories()
+                                .stream().max(PRICE_HISTORY_COMPARATOR)
+                                .map(PriceHistory::getAfter)
+                                .orElse(0L)
+                )
+                .photoId(
+                        post.getFiles()
+                                .stream()
+                                .map(File::getId)
+                                .min(Integer::compareTo)
+                                .orElse(0)
+                ).build();
     }
 
     private PostDto assemblePostDto(Post post) {
@@ -61,20 +59,26 @@ public class SimplePostService implements PostService {
                 .creationDate(post.getCreationDate())
                 .carName(post.getCar().getName())
                 .carYear(post.getCar().getYear())
+                .carPrice(
+                        post.getPriceHistories()
+                                .stream().max(PRICE_HISTORY_COMPARATOR)
+                                .map(PriceHistory::getAfter)
+                                .orElse(0L)
+                )
                 .photoIds(post.getFiles()
                         .stream()
                         .map(File::getId)
                         .sorted()
                         .toList()
                 );
-        var price = post.getPriceHistories().stream().max(BY_CREATED);
-        price.ifPresent(p -> dtoBuilder.carPrice(p.getAfter()));
-        var car = carRepo.findById(post.getCar().getId());
-        if (car.isPresent()) {
-            var carOwners = car.get().getOwners();
-            dtoBuilder.countOwners(carOwners.size());
-            dtoBuilder.isOwner(carOwners.contains(car.get().getOwner()));
-        }
+        carRepo.findById(post.getCar().getId())
+                .ifPresent(car -> {
+                    var owners = car.getOwners();
+                    dtoBuilder.countOwners(owners.size());
+                    dtoBuilder.isOwner(owners.contains(car.getOwner()));
+                    dtoBuilder.carEngine(car.getEngine().getName());
+                    dtoBuilder.carOdometer(car.getOdometer());
+                });
         return dtoBuilder.build();
     }
 }

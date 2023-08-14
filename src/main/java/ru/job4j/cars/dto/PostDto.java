@@ -19,6 +19,8 @@ public class PostDto {
     private String carName;
     private long carPrice;
     private int carYear;
+    private int carOdometer;
+    private String carEngine;
     private boolean isOwner;
     private List<Integer> photoIds;
 }

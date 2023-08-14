@@ -23,7 +23,8 @@ public class Car {
     private String name;
     @Column(name = "car_year")
     private int year;
-    @OneToOne(fetch = FetchType.LAZY)
+    private int odometer;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "engine_id")
     private Engine engine;
     @ManyToOne(fetch = FetchType.LAZY)

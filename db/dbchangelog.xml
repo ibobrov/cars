@@ -17,6 +17,6 @@
     <include file="scripts/010_ddl_add_colum_car_to_post_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/011_ddl_create_files_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/012_ddl_create_post_files_table.sql" relativeToChangelogFile="true"/>
-    <include file="scripts/013_ddl_add_column_year_to_car_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/013_ddl_add_columns_to_car_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/014_dml_insert_post_for_demo.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
