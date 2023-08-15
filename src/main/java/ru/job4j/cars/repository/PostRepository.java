@@ -22,4 +22,6 @@ public interface PostRepository {
     List<Post> getWithPhoto();
 
     List<Post> getBrand(String mark);
+
+    List<Post> getMultiCriteria();
 }

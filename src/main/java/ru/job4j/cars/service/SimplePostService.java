@@ -21,6 +21,8 @@ public class SimplePostService implements PostService {
     private final CarRepository carRepo;
     private static final Comparator<PriceHistory> PRICE_HISTORY_COMPARATOR =
             Comparator.comparing(PriceHistory::getCreated);
+    private static final Comparator<Post> REVERSED_POST_COMPARATOR =
+            Comparator.comparing(Post::getId).reversed();
 
     @Override
     public Optional<PostDto> findById(int id) {
@@ -28,8 +30,29 @@ public class SimplePostService implements PostService {
     }
 
     @Override
+    public List<PostPreview> getRecommendation(int itemCount) {
+        return postRepo.getAll().stream()
+                .sorted(REVERSED_POST_COMPARATOR)
+                .limit(itemCount)
+                .map(this::assemblePostPreview)
+                .toList();
+    }
+
+    @Override
+    public List<PostPreview> getLastDay() {
+        return postRepo.getLastDay().stream()
+                .sorted(REVERSED_POST_COMPARATOR)
+                .map(this::assemblePostPreview).toList();
+    }
+
+    @Override
     public List<PostPreview> getAll() {
         return postRepo.getAll().stream().map(this::assemblePostPreview).toList();
+    }
+
+    @Override
+    public List<PostPreview> getByCriteria() {
+        return postRepo.getMultiCriteria().stream().map(this::assemblePostPreview).toList();
     }
 
     private PostPreview assemblePostPreview(Post post) {

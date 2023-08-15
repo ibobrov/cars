@@ -150,4 +150,45 @@ public class HibernatePostRepository implements PostRepository {
         }
         return rsl;
     }
+
+    @Override
+    public List<Post> getMultiCriteria() {
+        TriConsumer<CriteriaBuilder, CriteriaQuery<Post>, Root<Post>> withPhoto
+                = (builder, query, posts) -> query.select(posts)
+                .distinct(true)
+                .where(
+                        builder.isNotEmpty(
+                                posts.get("files")
+                        ));
+        TriConsumer<CriteriaBuilder, CriteriaQuery<Post>, Root<Post>> withBrand
+                = (builder, query, posts) -> query.select(posts)
+                .distinct(true)
+                .where(
+                        builder.like(
+                                posts.get("car").get("name"),
+                                "%" + "HONDA" + "%"
+                        ));
+        return multiCriteria(List.of(withPhoto, withBrand));
+    }
+
+    private List<Post> multiCriteria(List<TriConsumer<CriteriaBuilder, CriteriaQuery<Post>, Root<Post>>> consumers) {
+        List<Post> rsl = List.of();
+        try {
+            rsl = crudRepo.runAndBack(session -> {
+                var criteriaBuilder = session.getEntityManagerFactory().getCriteriaBuilder();
+                var criteriaQuery = criteriaBuilder.createQuery(Post.class);
+                var posts = criteriaQuery.from(Post.class);
+                posts.fetch("user", JoinType.LEFT);
+                posts.fetch("car", JoinType.LEFT);
+                posts.fetch("priceHistories", JoinType.LEFT);
+                posts.fetch("participates", JoinType.LEFT);
+                posts.fetch("files", JoinType.LEFT);
+                consumers.forEach(c -> c.accept(criteriaBuilder, criteriaQuery, posts));
+                return session.createQuery(criteriaQuery).getResultList();
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return rsl;
+    }
 }

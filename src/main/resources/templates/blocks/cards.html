@@ -1,0 +1,21 @@
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 pb-3" th:fragment="cards">
+  <div th:each="prev: ${prevPosts}">
+    <div class="card h-100 shadow-sm">
+      <a class="pb-1" th:href="@{/posts/{postId}(postId=${prev.id})}">
+        <img style="height: 25rex" class="card-img-top bd-placeholder-img object-fit-cover"
+             th:src="@{/files/{fileId}(fileId=${prev.photoId})}" alt="post image">
+      </a>
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <h5 th:text="'$' + ${#strings.replace(#numbers.formatCurrency(prev.carPrice), ',00&nbsp;¤', '')}"></h5>
+          </div>
+          <div class="col">
+            <span th:text="${prev.odometer} + ' km'"></span><br>
+          </div>
+        </div>
+        <span class="text-body-tertiary" th:text="${prev.title}"></span>
+      </div>
+    </div>
+  </div>
+</div>

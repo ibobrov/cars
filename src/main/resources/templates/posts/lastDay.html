@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+	<link th:href="@{/css/bootstrap.5.3.0/bootstrap.css}" rel="stylesheet">
+	<script th:src="@{/js/popper.2.11.8.umd/popper.min.js}"></script>
+	<script th:src="@{/js/bootstrap.5.3.0/bootstrap.min.js}"></script>
+	<title>Last Day</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+	<div th:insert="blocks/header :: header"></div>
+	<div th:insert="blocks/loginModal :: login"></div>
+	<div th:insert="blocks/registerMadal :: sign"></div>
+
+	<div class="album py-2 bg-body-tertiary">
+		<div class="container">
+
+			<h3 class="pt-3 pe-3 ps-3">Last 24 hours</h3>
+			<div class="p-4 min-vh-100" th:insert="blocks/cards :: cards"></div>
+
+		</div>
+	</div>
+
+	<div th:insert="blocks/footer :: footer"></div>
+</div>
+</body>
+</html>

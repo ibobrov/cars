@@ -23,4 +23,16 @@ public class PostController {
         model.addAttribute("post", post.get());
         return "posts/post";
     }
+
+    @GetMapping("/last_day")
+    public String getLastDay(Model model) {
+        model.addAttribute("prevPosts", postService.getLastDay());
+        return "posts/lastDay";
+    }
+
+    @GetMapping("/catalog")
+    public String getCatalog(Model model) {
+        model.addAttribute("prevPosts", postService.getByCriteria());
+        return "posts/catalog";
+    }
 }

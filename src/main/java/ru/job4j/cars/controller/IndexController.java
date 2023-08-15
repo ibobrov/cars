@@ -9,11 +9,12 @@ import ru.job4j.cars.service.PostService;
 @Controller
 @AllArgsConstructor
 public class IndexController {
+    private final static int RECOMMENDATION_SIZE = 4;
     private final PostService postService;
 
     @GetMapping({"", "/index"})
     public String getIndex(Model model) {
-        model.addAttribute("prevPosts", postService.getAll());
+        model.addAttribute("prevPosts", postService.getRecommendation(RECOMMENDATION_SIZE));
         return "index";
     }
 }

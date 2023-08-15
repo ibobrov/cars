@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+	<link th:href="@{/css/bootstrap.5.3.0/bootstrap.css}" rel="stylesheet">
+	<script th:src="@{/js/popper.2.11.8.umd/popper.min.js}"></script>
+	<script th:src="@{/js/bootstrap.5.3.0/bootstrap.min.js}"></script>
+	<title>Catalog</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+	<div th:insert="blocks/header :: header"></div>
+	<div th:insert="blocks/loginModal :: login"></div>
+	<div th:insert="blocks/registerMadal :: sign"></div>
+
+	<div class="album py-2 bg-body-tertiary">
+		<div class="container">
+
+			<div class="p-5">
+				<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 pb-3">
+					<div th:each="prev: ${prevPosts}">
+						<div class="col">
+							<div class="card shadow-sm" style="height: 320px">
+								<a th:href="@{/posts/{postId}(postId=${prev.id})}">
+									<img class="bd-placeholder-img card-img-top object-fit-contain" width="auto"
+									     height="170px" th:src="@{/files/{fileId}(fileId=${prev.photoId})}" alt="post image">
+								</a>
+								<div class="card-body">
+									<div class="row">
+										<div class="col">
+											<h5 th:text="'$' + ${#strings.replace(#numbers.formatCurrency(prev.carPrice), ',00&nbsp;¤', '')}"></h5>
+										</div>
+										<div class="col">
+											<span th:text="${prev.odometer} + ' km'"></span><br>
+										</div>
+									</div>
+									<span class="text-body-tertiary" th:text="${prev.title}"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div th:insert="blocks/footer :: footer"></div>
+</div>
+</body>
+</html>

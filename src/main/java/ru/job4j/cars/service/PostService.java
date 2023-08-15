@@ -10,5 +10,11 @@ public interface PostService {
 
     Optional<PostDto> findById(int id);
 
+    List<PostPreview> getRecommendation(int itemCount);
+
+    List<PostPreview> getLastDay();
+
     List<PostPreview> getAll();
+
+    List<PostPreview> getByCriteria();
 }
