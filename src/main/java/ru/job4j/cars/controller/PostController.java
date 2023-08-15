@@ -5,7 +5,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.job4j.cars.dto.Filter;
 import ru.job4j.cars.service.PostService;
 
 @Controller
@@ -32,7 +34,13 @@ public class PostController {
 
     @GetMapping("/catalog")
     public String getCatalog(Model model) {
-        model.addAttribute("prevPosts", postService.getByCriteria());
+        model.addAttribute("prevPosts", postService.getAll());
+        return "posts/catalog";
+    }
+
+    @PostMapping("/catalog")
+    public String findByFilter(Filter filter, Model model) {
+        model.addAttribute("prevPosts", postService.findByFilter(filter));
         return "posts/catalog";
     }
 }

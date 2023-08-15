@@ -1,19 +1,17 @@
 package ru.job4j.cars.repository;
 
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import ru.job4j.cars.dto.Filter;
 import ru.job4j.cars.model.Post;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Optional.empty;
@@ -42,6 +40,10 @@ public class HibernatePostRepository implements PostRepository {
                                               LEFT JOIN FETCH p.participates
                                               LEFT JOIN FETCH p.files
                                               """;
+    private final BiFunction<CriteriaBuilder, Root<Post>, Predicate> withPhoto
+            = (builder, posts) -> builder.isNotEmpty(posts.get("files"));
+    private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
+            SELECT_LAST_DAY = (builder, posts) -> builder.between(posts.get("creationDate"), now().minusDays(1), now());
 
     @Override
     public Post save(Post post) {
@@ -100,95 +102,95 @@ public class HibernatePostRepository implements PostRepository {
 
     @Override
     public List<Post> getLastDay() {
-        return getByCriteria((builder, query, posts) -> query.select(posts)
-                .distinct(true)
-                .where(
-                        builder.between(
-                                posts.get("creationDate"),
-                                now().minusDays(1), now()
-                        )));
+        List<Post> rsl = List.of();
+        try {
+            rsl = getByCriteria(SELECT_LAST_DAY);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return rsl;
     }
 
     @Override
     public List<Post> getWithPhoto() {
-        return getByCriteria((builder, query, posts) -> query.select(posts)
-                .distinct(true)
-                .where(
-                        builder.isNotEmpty(
-                                posts.get("files")
-                        )));
+        List<Post> rsl = List.of();
+        try {
+            rsl = getByCriteria(withPhoto);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return rsl;
     }
 
     @Override
     public List<Post> getBrand(String brand) {
-        return getByCriteria((builder, query, posts) -> query.select(posts)
-                .distinct(true)
-                .where(
-                        builder.like(
-                                posts.get("car").get("name"),
-                                "%" + brand + "%"
-                        )));
-    }
-
-    private List<Post> getByCriteria(TriConsumer<CriteriaBuilder, CriteriaQuery<Post>, Root<Post>> consumer) {
         List<Post> rsl = List.of();
         try {
-            rsl = crudRepo.runAndBack(session -> {
-                var criteriaBuilder = session.getEntityManagerFactory().getCriteriaBuilder();
-                var criteriaQuery = criteriaBuilder.createQuery(Post.class);
-                var posts = criteriaQuery.from(Post.class);
-                posts.fetch("user", JoinType.LEFT);
-                posts.fetch("car", JoinType.LEFT);
-                posts.fetch("priceHistories", JoinType.LEFT);
-                posts.fetch("participates", JoinType.LEFT);
-                posts.fetch("files", JoinType.LEFT);
-                consumer.accept(criteriaBuilder, criteriaQuery, posts);
-                return session.createQuery(criteriaQuery).getResultList();
-            });
+            rsl = getByCriteria(getBrandBiFunc(brand));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
         return rsl;
+    }
+
+    private BiFunction<CriteriaBuilder, Root<Post>, Predicate> getBrandBiFunc(String brand) {
+        return (builder, posts) -> builder.like(posts.get("car").get("name"), "%" + brand + "%");
     }
 
     @Override
-    public List<Post> getMultiCriteria() {
-        TriConsumer<CriteriaBuilder, CriteriaQuery<Post>, Root<Post>> withPhoto
-                = (builder, query, posts) -> query.select(posts)
-                .distinct(true)
-                .where(
-                        builder.isNotEmpty(
-                                posts.get("files")
-                        ));
-        TriConsumer<CriteriaBuilder, CriteriaQuery<Post>, Root<Post>> withBrand
-                = (builder, query, posts) -> query.select(posts)
-                .distinct(true)
-                .where(
-                        builder.like(
-                                posts.get("car").get("name"),
-                                "%" + "HONDA" + "%"
-                        ));
-        return multiCriteria(List.of(withPhoto, withBrand));
+    public List<Post> getByFilter(Filter filter) {
+        BiFunction<CriteriaBuilder, Root<Post>, Predicate> biFunction =
+                (builder, posts) -> {
+                    Predicate predicate = null;
+                    if (!filter.getBrand().equals("none")) {
+                        predicate = builder.like(posts.get("car").get("name"),
+                                "%" + filter.getBrand() + "%");
+                    }
+                    if (!filter.getModel().equals("none")) {
+                        var modelPredicate = builder.like(posts.get("car").get("name"),
+                                "%" + filter.getModel() + "%");
+                        if (predicate == null) {
+                            predicate = modelPredicate;
+                        } else {
+                            predicate = builder.and(predicate, modelPredicate);
+                        }
+                    }
+                    if (!filter.isWithoutPhoto()) {
+                        var photoPredicate = builder.isNotEmpty(posts.get("files"));
+                        if (predicate == null) {
+                            predicate = photoPredicate;
+                        } else {
+                            predicate = builder.and(photoPredicate, predicate);
+                        }
+                    }
+                    return predicate;
+                };
+        return getByCriteria(biFunction);
     }
 
-    private List<Post> multiCriteria(List<TriConsumer<CriteriaBuilder, CriteriaQuery<Post>, Root<Post>>> consumers) {
+    private List<Post> getByCriteria(BiFunction<CriteriaBuilder, Root<Post>, Predicate> biFunction) {
         List<Post> rsl = List.of();
         try {
             rsl = crudRepo.runAndBack(session -> {
-                var criteriaBuilder = session.getEntityManagerFactory().getCriteriaBuilder();
-                var criteriaQuery = criteriaBuilder.createQuery(Post.class);
-                var posts = criteriaQuery.from(Post.class);
-                posts.fetch("user", JoinType.LEFT);
-                posts.fetch("car", JoinType.LEFT);
-                posts.fetch("priceHistories", JoinType.LEFT);
-                posts.fetch("participates", JoinType.LEFT);
-                posts.fetch("files", JoinType.LEFT);
-                consumers.forEach(c -> c.accept(criteriaBuilder, criteriaQuery, posts));
-                return session.createQuery(criteriaQuery).getResultList();
+                var builder = session.getEntityManagerFactory().getCriteriaBuilder();
+                var query = builder.createQuery(Post.class);
+                var posts = query.from(Post.class);
+                fetchAll(posts);
+                var predicate = biFunction.apply(builder, posts);
+                query.distinct(true).where(predicate);
+                return session.createQuery(query).getResultList();
             });
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
         return rsl;
+    }
+
+    private void fetchAll(Root<Post> posts) {
+        posts.fetch("user", JoinType.LEFT);
+        posts.fetch("car", JoinType.LEFT);
+        posts.fetch("priceHistories", JoinType.LEFT);
+        posts.fetch("participates", JoinType.LEFT);
+        posts.fetch("files", JoinType.LEFT);
     }
 }
