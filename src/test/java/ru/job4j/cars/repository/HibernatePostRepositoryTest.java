@@ -86,7 +86,7 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenSavePostThenFindByIdSame() {
-        var post = new Post(-1, "desc", now(), staticUser, staticCar1,
+        var post = new Post(-1, "desc", now(), 10000L, staticUser, staticCar1,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post);
         assertThat(postRepo.findById(post.getId()).get()).isEqualTo(post);
@@ -99,7 +99,7 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenSaveAndDeletePostThenDeleteReturnTrueAndFindByIdEmpty() {
-        var post = new Post(-1, "desc", now(), staticUser, staticCar1,
+        var post = new Post(-1, "desc", now(), 10000L, staticUser, staticCar1,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post);
         var isDelete = postRepo.delete(post.getId());
@@ -115,10 +115,10 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenSaveAndUpdatePostThenFindUpdated() {
-        var post = new Post(-1, "desc", now(), staticUser, staticCar1,
+        var post = new Post(-1, "desc", now(), 10000L, staticUser, staticCar1,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post);
-        var postV2 = new Post(post.getId(), "new desc", now(), staticUser, staticCar1,
+        var postV2 = new Post(post.getId(), "new desc", now(), 10000L, staticUser, staticCar1,
                 Set.of(), Set.of(), Set.of());
         var isUpdate = postRepo.update(postV2);
         assertThat(isUpdate).isTrue();
@@ -135,9 +135,9 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenGetBrandThenReturnCorrect() {
-        var post1 = new Post(-1, "desc", now(), staticUser, staticCar1,
+        var post1 = new Post(-1, "desc", now(), 10000L, staticUser, staticCar1,
                 Set.of(), Set.of(), Set.of());
-        var post2 = new Post(-1, "desc", now(), staticUser, staticCar2,
+        var post2 = new Post(-1, "desc", now(), 10000L, staticUser, staticCar2,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post1);
         postRepo.save(post2);
@@ -147,9 +147,9 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenGetWithPhotoThenReturnCorrect() {
-        var post1 = new Post(-1, "desc", now(), staticUser, staticCar1,
+        var post1 = new Post(-1, "desc", now(), 10000L, staticUser, staticCar1,
                 Set.of(), Set.of(), Set.of());
-        var post2 = new Post(-1, "desc", now(), staticUser, staticCar2,
+        var post2 = new Post(-1, "desc", now(), 10000L, staticUser, staticCar2,
                 Set.of(), Set.of(), Set.of(staticFile));
         postRepo.save(post1);
         postRepo.save(post2);
@@ -158,9 +158,9 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenGetByDayThenReturnCorrect() {
-        var post1 = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), staticUser, staticCar1,
+        var post1 = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L, staticUser, staticCar1,
                 Set.of(), Set.of(), Set.of());
-        var post2 = new Post(-1, "desc", now(), staticUser, staticCar2,
+        var post2 = new Post(-1, "desc", now(), 10000L, staticUser, staticCar2,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post1);
         postRepo.save(post2);

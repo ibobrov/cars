@@ -3,12 +3,10 @@ package ru.job4j.cars.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import ru.job4j.cars.dto.Filter;
+import org.springframework.web.bind.annotation.*;
 import ru.job4j.cars.service.PostService;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/posts")
@@ -39,7 +37,7 @@ public class PostController {
     }
 
     @PostMapping("/catalog")
-    public String findByFilter(Filter filter, Model model) {
+    public String findByFilter(@RequestParam Map<String, String> filter, Model model) {
         model.addAttribute("prevPosts", postService.findByFilter(filter));
         return "posts/catalog";
     }

@@ -2,17 +2,16 @@ package ru.job4j.cars.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.job4j.cars.dto.Filter;
 import ru.job4j.cars.dto.PostDto;
 import ru.job4j.cars.dto.PostPreview;
 import ru.job4j.cars.model.File;
 import ru.job4j.cars.model.Post;
-import ru.job4j.cars.model.PriceHistory;
 import ru.job4j.cars.repository.CarRepository;
 import ru.job4j.cars.repository.PostRepository;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,11 +19,8 @@ import java.util.Optional;
 public class SimplePostService implements PostService {
     private final PostRepository postRepo;
     private final CarRepository carRepo;
-    private static final Comparator<PriceHistory> PRICE_HISTORY_COMPARATOR =
-            Comparator.comparing(PriceHistory::getCreated);
     private static final Comparator<Post> REVERSED_POST_COMPARATOR =
             Comparator.comparing(Post::getId).reversed();
-    private static final Filter EMPTY_FILTER = new Filter();
 
     @Override
     public Optional<PostDto> findById(int id) {
@@ -32,14 +28,18 @@ public class SimplePostService implements PostService {
     }
 
     @Override
-    public List<PostPreview> findByFilter(Filter filter) {
-        if (EMPTY_FILTER.equals(filter)) {
-            return getAll();
+    public List<PostPreview> findByFilter(Map<String, String> filters) {
+        filters.values().removeAll(List.of(""));
+        List<PostPreview> rsl;
+        if (filters.isEmpty()) {
+            rsl =  getAll();
+        } else {
+            if (filters.keySet().containsAll(List.of("brand", "model"))) {
+                filters.remove("brand");
+            }
+            rsl = postRepo.getByFilter(filters).stream().map(this::assemblePostPreview).toList();
         }
-        if (!"none".equals(filter.getModel())) {
-            filter.setBrand("none");
-        }
-        return postRepo.getByFilter(filter).stream().map(this::assemblePostPreview).toList();
+        return rsl;
     }
 
     @Override
@@ -68,12 +68,7 @@ public class SimplePostService implements PostService {
                 .id(post.getId())
                 .title(post.getCar().getYear() + " " + post.getCar().getName())
                 .odometer(post.getCar().getOdometer())
-                .carPrice(
-                        post.getPriceHistories()
-                                .stream().max(PRICE_HISTORY_COMPARATOR)
-                                .map(PriceHistory::getAfter)
-                                .orElse(0L)
-                )
+                .carPrice(post.getPrice())
                 .photoId(
                         post.getFiles()
                                 .stream()
@@ -90,12 +85,7 @@ public class SimplePostService implements PostService {
                 .creationDate(post.getCreationDate())
                 .carName(post.getCar().getName())
                 .carYear(post.getCar().getYear())
-                .carPrice(
-                        post.getPriceHistories()
-                                .stream().max(PRICE_HISTORY_COMPARATOR)
-                                .map(PriceHistory::getAfter)
-                                .orElse(0L)
-                )
+                .carPrice(post.getPrice())
                 .photoIds(post.getFiles()
                         .stream()
                         .map(File::getId)

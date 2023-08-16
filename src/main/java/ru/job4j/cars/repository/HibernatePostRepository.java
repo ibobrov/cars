@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import ru.job4j.cars.dto.Filter;
 import ru.job4j.cars.model.Post;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,8 +42,8 @@ public class HibernatePostRepository implements PostRepository {
                                               LEFT JOIN FETCH p.participates
                                               LEFT JOIN FETCH p.files
                                               """;
-    private final BiFunction<CriteriaBuilder, Root<Post>, Predicate> withPhoto
-            = (builder, posts) -> builder.isNotEmpty(posts.get("files"));
+    private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
+            WITH_PHOTO = (builder, posts) -> builder.isNotEmpty(posts.get("files"));
     private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
             SELECT_LAST_DAY = (builder, posts) -> builder.between(posts.get("creationDate"), now().minusDays(1), now());
 
@@ -115,7 +117,7 @@ public class HibernatePostRepository implements PostRepository {
     public List<Post> getWithPhoto() {
         List<Post> rsl = List.of();
         try {
-            rsl = getByCriteria(withPhoto);
+            rsl = getByCriteria(WITH_PHOTO);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -138,33 +140,9 @@ public class HibernatePostRepository implements PostRepository {
     }
 
     @Override
-    public List<Post> getByFilter(Filter filter) {
+    public List<Post> getByFilter(Map<String, String> filters) {
         BiFunction<CriteriaBuilder, Root<Post>, Predicate> biFunction =
-                (builder, posts) -> {
-                    Predicate predicate = null;
-                    if (!filter.getBrand().equals("none")) {
-                        predicate = builder.like(posts.get("car").get("name"),
-                                "%" + filter.getBrand() + "%");
-                    }
-                    if (!filter.getModel().equals("none")) {
-                        var modelPredicate = builder.like(posts.get("car").get("name"),
-                                "%" + filter.getModel() + "%");
-                        if (predicate == null) {
-                            predicate = modelPredicate;
-                        } else {
-                            predicate = builder.and(predicate, modelPredicate);
-                        }
-                    }
-                    if (!filter.isWithoutPhoto()) {
-                        var photoPredicate = builder.isNotEmpty(posts.get("files"));
-                        if (predicate == null) {
-                            predicate = photoPredicate;
-                        } else {
-                            predicate = builder.and(photoPredicate, predicate);
-                        }
-                    }
-                    return predicate;
-                };
+                (builder, posts) -> createPredicate(filters, builder, posts);
         return getByCriteria(biFunction);
     }
 
@@ -192,5 +170,45 @@ public class HibernatePostRepository implements PostRepository {
         posts.fetch("priceHistories", JoinType.LEFT);
         posts.fetch("participates", JoinType.LEFT);
         posts.fetch("files", JoinType.LEFT);
+    }
+
+    private Predicate andOrReturn(Predicate one, Predicate two, CriteriaBuilder builder) {
+        if (one == null) {
+            return two;
+        } else {
+            return builder.and(one, two);
+        }
+    }
+
+    private Predicate createPredicate(Map<String, String> filters, CriteriaBuilder builder, Root<Post> posts) {
+        Predicate predicate = null;
+        var keys = filters.keySet();
+        for (var key : keys) {
+            switch (key) {
+                case "brand" -> {
+                    var byBrand = getBrandBiFunc(filters.get("brand")).apply(builder, posts);
+                    predicate = andOrReturn(predicate, byBrand, builder);
+                }
+                case "model" -> {
+                    var byModel = getBrandBiFunc(filters.get("model")).apply(builder, posts);
+                    predicate = andOrReturn(predicate, byModel, builder);
+                }
+                case "fromPrice" -> {
+                    var byPrice = builder.greaterThanOrEqualTo(posts.get("price"), filters.get("fromPrice"));
+                    predicate = andOrReturn(predicate, byPrice, builder);
+                }
+                case "toPrice" -> {
+                    var byPrice = builder.lessThanOrEqualTo(posts.get("price"), filters.get("toPrice"));
+                    predicate = andOrReturn(predicate, byPrice, builder);
+                }
+                case "withoutPhoto" -> {
+                    if ("false".equals(filters.get("withoutPhoto"))) {
+                        var photoPredicate = WITH_PHOTO.apply(builder, posts);
+                        predicate = andOrReturn(predicate, photoPredicate, builder);
+                    }
+                }
+            }
+        }
+        return predicate;
     }
 }

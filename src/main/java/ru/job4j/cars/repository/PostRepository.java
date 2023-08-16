@@ -1,9 +1,9 @@
 package ru.job4j.cars.repository;
 
-import ru.job4j.cars.dto.Filter;
 import ru.job4j.cars.model.Post;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface PostRepository {
@@ -24,5 +24,5 @@ public interface PostRepository {
 
     List<Post> getBrand(String mark);
 
-    List<Post> getByFilter(Filter filter);
+    List<Post> getByFilter(Map<String, String> filters);
 }

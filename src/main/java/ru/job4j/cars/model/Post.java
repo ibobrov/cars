@@ -27,6 +27,7 @@ public class Post {
     @NotNull
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
+    private Long price;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
