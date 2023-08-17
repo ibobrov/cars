@@ -135,11 +135,11 @@
   --bs-secondary-color: rgba(173, 181, 189, 0.75);
   --bs-secondary-color-rgb: 173, 181, 189;
   --bs-secondary-bg: #343a40;
-  --bs-secondary-bg-rgb: 52, 58, 64;
+  --bs-secondary-bg-rgb: 151, 165, 176;
   --bs-tertiary-color: rgba(173, 181, 189, 0.5);
   --bs-tertiary-color-rgb: 173, 181, 189;
   --bs-tertiary-bg: #2b3035;
-  --bs-tertiary-bg-rgb: 151, 165, 176;
+  --bs-tertiary-bg-rgb: 43, 48, 53;
   --bs-primary-text-emphasis: #6ea8fe;
   --bs-secondary-text-emphasis: #a7acb1;
   --bs-success-text-emphasis: #75b798;

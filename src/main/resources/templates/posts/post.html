@@ -15,23 +15,144 @@
 	<div th:insert="blocks/loginModal :: login"></div>
 	<div th:insert="blocks/registerMadal :: sign"></div>
 
-	<div class="album py-2 bg-body-tertiary">
+	<div class="album pt-4 pb-4 py-2 bg-body-tertiary">
 		<div class="container">
 
-			<div class="p-5">
-				<h5 th:text="'id = ' + ${post.id}"></h5>
-				<h5 th:text=" 'description = ' + ${post.description}"></h5>
-				<h5 th:text=" 'creationDate = ' + ${post.creationDate}"></h5>
-				<h5 th:text=" 'countOwners = ' + ${post.countOwners}"></h5>
-				<h5 th:text=" 'carName = ' + ${post.carName}"></h5>
-				<h5 th:text=" 'carPrice = ' + ${post.carPrice}"></h5>
-				<h5 th:text=" 'carYear = ' + ${post.carYear}"></h5>
-				<h5 th:text=" 'carOdometer = ' + ${post.carOdometer}"></h5>
-				<h5 th:text=" 'carEngine = ' + ${post.carEngine}"></h5>
-				<h5 th:text=" 'isOwner = ' + ${post.isOwner}"></h5>
-				<h5 th:text=" 'photo Ids = ' + ${post.photoIds}"></h5>
-			</div>
+			<div class="p-4 pb-0 rounded-3 border shadow-lg">
 
+				<div class="pb-3 ps-3 pe-3 row">
+					<div class="col-9">
+						<h3 th:text="${post.carName} + ', ' + ${post.carYear}"></h3>
+						<span class="text-secondary-emphasis" th:text="${#temporals.format(post.creationDate, 'dd.MM.yy HH:mm')}"></span>
+					</div>
+					<div class="col-3 mt-1 text-end">
+						<h4 th:text="'$' + ${post.carPrice}"></h4>
+					</div>
+				</div>
+
+				<div class="row mb-4 ps-3">
+					<div class="col-md-7 themed-grid-col">
+						<div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel">
+							<div class="carousel-indicators">
+								<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true"></button>
+								<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+								<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+							</div>
+							<div class="carousel-inner">
+
+								<div class="carousel-item active">
+									<img class="d-block w-100" th:src="@{/files/{fileId}(fileId=${post.photoIds.stream().findFirst().get()})}" alt="photo">
+								</div>
+
+								<div class="carousel-item" th:each="id : ${post.getPhotoIds().stream().skip(1).toArray()}">
+									<img th:src="@{/files/{fileId}(fileId=${id})}" class="d-block w-100" alt="photo">
+								</div>
+
+							</div>
+							<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+								<span class="visually-hidden">Previous</span>
+							</button>
+							<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+								<span class="carousel-control-next-icon" aria-hidden="true"></span>
+								<span class="visually-hidden">Next</span>
+							</button>
+						</div>
+					</div>
+
+					<div class="pe-3 col">
+
+						<table class="table table-light">
+							<tbody>
+							<tr>
+								<td>
+									<b>Model</b>
+								</td>
+								<td class="text-end">
+									<span th:text="${post.carName}"></span>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<b>Year</b>
+								</td>
+								<td class="text-end">
+									<span th:text="${post.carYear}"></span>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<b>Odometer</b>
+								</td>
+								<td class="text-end">
+									<span th:text="${post.carOdometer} + ' km'"></span>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<b>Engine</b>
+								</td>
+								<td class="text-end">
+									<span th:text="${post.carEngine}"></span>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<b>Transmission</b>
+								</td>
+								<td class="text-end">
+									<span>AUTOMATIC</span>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<b>Fuel</b>
+								</td>
+								<td class="text-end">
+									<span>HYBRID ENGINE</span>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<b>Owner</b>
+								</td>
+								<td class="text-end">
+									<span th:if="${post.owner}">✓</span>
+									<span th:if="${!post.owner}">-</span>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<b>Owners</b>
+								</td>
+								<td class="text-end">
+									<span th:text="${post.countOwners}"></span>
+								</td>
+							</tr>
+
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+
+				<div class="m-4 ps-2 pe-2">
+					<h3>Comment from seller</h3>
+					<span th:text="'&#34'+ ${post.description} + '&#34'">
+					</span>
+				</div>
+
+				<h3 class="pt-3 ps-3 pe-3 pb-2">Viewed recently</h3>
+				<div class="pe-3 ps-3 pb-3" th:insert="blocks/cards :: cards"></div>
+
+			</div>
 		</div>
 	</div>
 

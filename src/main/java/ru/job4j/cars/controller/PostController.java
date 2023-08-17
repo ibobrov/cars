@@ -21,6 +21,8 @@ public class PostController {
             return "errors/error-404";
         }
         model.addAttribute("post", post.get());
+        model.addAttribute("prevPosts",
+                postService.getRecommendation(IndexController.RECOMMENDATION_SIZE));
         return "posts/post";
     }
 
