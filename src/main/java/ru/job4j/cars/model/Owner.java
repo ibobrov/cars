@@ -22,4 +22,8 @@ public class Owner {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Owner(int id) {
+        this.id = id;
+    }
 }

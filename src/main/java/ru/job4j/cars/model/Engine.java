@@ -19,4 +19,8 @@ public class Engine {
     @EqualsAndHashCode.Include
     private int id;
     private String name;
+
+    public Engine(int id) {
+        this.id = id;
+    }
 }
