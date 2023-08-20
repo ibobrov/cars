@@ -17,6 +17,29 @@
         <li class="nav-item"><a href="/posts/catalog" class="nav-link link-body-emphasis px-2">Catalog</a></li>
       </ul>
 
+      <!--Auth block-->
+      <div th:if="${user.login == 'Guest'}">
+        <ul class="nav">
+          <li class="nav-item">
+            <button type="button" class="nav-link link-body-emphasis px-2" data-bs-toggle="modal"
+                    data-bs-target="#login">Login</button>
+          </li>
+          <li class="nav-item">
+            <button type="button" class="nav-link link-body-emphasis px-2" data-bs-toggle="modal"
+                    data-bs-target="#signup">Sign up</button>
+          </li>
+        </ul>
+      </div>
+      <div th:if="${user.login != 'Guest'}">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link link-body-emphasis px-2" th:text="${user.login}"></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link link-body-emphasis px-2" th:href="@{/users/logout}">Sign out</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 </header>

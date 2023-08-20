@@ -1,20 +1,22 @@
 <header data-bs-theme="dark" th:fragment="headerWithoutAuth">
-	<nav class="py-2 bg-body-tertiary border-bottom bg-dark">
+	<!--css folder background-color overrated, because changed --bs-secondary-bg-rgb var-->
+	<nav class="py-2 bg-body-secondary">
 		<div class="container d-flex flex-wrap">
 			<ul class="nav">
-				<li class="nav-item me-4">
-					<a href="/"><img th:src="@{../img/logo.svg}" alt="logo" height="38"></a>
+				<li class="nav-item me-4 pt-1">
+					<a href="/"><img th:src="@{../img/logo.png}" alt="logo" height="38"></a>
 				</li>
 			</ul>
 			<ul class="nav">
 				<li class="nav-item"><a href="/" class="nav-link link-body-emphasis px-2">Home</a></li>
 			</ul>
 			<ul class="nav">
-				<li class="nav-item"><a href="/sessions/list" class="nav-link link-body-emphasis px-2">Schedule</a></li>
+				<li class="nav-item"><a href="/posts/last_day" class="nav-link link-body-emphasis px-2">Last 24 hours</a></li>
 			</ul>
 			<ul class="nav me-auto">
-				<li class="nav-item"><a href="/films/list" class="nav-link link-body-emphasis px-2">Filmography</a></li>
+				<li class="nav-item"><a href="/posts/catalog" class="nav-link link-body-emphasis px-2">Catalog</a></li>
 			</ul>
+
 		</div>
 	</nav>
 </header>
