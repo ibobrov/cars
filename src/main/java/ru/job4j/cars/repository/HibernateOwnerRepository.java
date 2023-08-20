@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.Owner;
+import ru.job4j.cars.model.User;
 
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,18 @@ public class HibernateOwnerRepository implements OwnerRepository {
         Optional<Owner> rsl = empty();
         try {
             rsl = crudRepo.optional("FROM Owner o JOIN FETCH o.user WHERE o.id = :id", Owner.class, Map.of("id", id));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return rsl;
+    }
+
+    @Override
+    public Optional<Owner> findByUser(User user) {
+        Optional<Owner> rsl = empty();
+        try {
+            rsl = crudRepo.optional("FROM Owner o JOIN FETCH o.user WHERE o.user.id = :id",
+                    Owner.class, Map.of("id", user.getId()));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

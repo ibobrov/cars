@@ -20,5 +20,6 @@
         <mapping class="ru.job4j.cars.model.Car"/>
         <mapping class="ru.job4j.cars.model.Owner"/>
         <mapping class="ru.job4j.cars.model.File"/>
+        <mapping class="ru.job4j.cars.model.CarModel"/>
     </session-factory>
 </hibernate-configuration>

@@ -5,25 +5,25 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "owners")
+@Table(name = "models")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Owner {
+public class CarModel implements Comparable<CarModel> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int id;
-
     private String name;
+    private String brand;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @ToString.Exclude
-    private User user;
-
-    public Owner(int id) {
-        this.id = id;
+    @Override
+    public int compareTo(@NonNull CarModel o) {
+        var rsl = brand.compareTo(o.brand);
+        if (rsl == 0) {
+            rsl = name.compareTo(o.name);
+        }
+        return rsl;
     }
 }

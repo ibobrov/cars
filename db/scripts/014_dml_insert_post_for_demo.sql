@@ -64,3 +64,5 @@ INSERT INTO history_owners(owners_id, car_id) VALUES (1, 1);
 INSERT INTO history_owners(owners_id, car_id) VALUES (1, 2);
 INSERT INTO history_owners(owners_id, car_id) VALUES (1, 3);
 INSERT INTO history_owners(owners_id, car_id) VALUES (1, 4);
+
+INSERT INTO files(id, name, path) VALUES (0, 'no_img', 'src/main/resources/files/no_img.png');

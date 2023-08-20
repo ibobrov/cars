@@ -7,7 +7,7 @@
 	<link th:href="@{/css/bootstrap.5.3.0/bootstrap.css}" rel="stylesheet">
 	<script th:src="@{/js/popper.2.11.8.umd/popper.min.js}"></script>
 	<script th:src="@{/js/bootstrap.5.3.0/bootstrap.min.js}"></script>
-	<title th:text="${post.carName}"></title>
+	<title th:text="${post.carName} + ', ' + ${post.carYear}"></title>
 </head>
 <body>
 <div class="container-fluid p-0">
@@ -23,7 +23,8 @@
 				<div class="pb-3 ps-3 pe-3 row">
 					<div class="col-9">
 						<h3 th:text="${post.carName} + ', ' + ${post.carYear}"></h3>
-						<span class="text-secondary-emphasis" th:text="${#temporals.format(post.creationDate, 'dd.MM.yy HH:mm')}"></span>
+						<span class="text-secondary-emphasis" th:text="${#temporals.format(post.creationDate, 'dd.MM.yy HH:mm')}">
+						</span>
 					</div>
 					<div class="col-3 mt-1 text-end">
 						<h4 th:text="'$' + ${post.carPrice}"></h4>
@@ -33,15 +34,11 @@
 				<div class="row mb-4 ps-3">
 					<div class="col-md-7 themed-grid-col">
 						<div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel">
-							<div class="carousel-indicators">
-								<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true"></button>
-								<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-								<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
-							</div>
 							<div class="carousel-inner">
 
 								<div class="carousel-item active">
-									<img class="d-block w-100" th:src="@{/files/{fileId}(fileId=${post.photoIds.stream().findFirst().get()})}" alt="photo">
+									<img class="d-block w-100"
+									     th:src="@{/files/{fileId}(fileId=${post.photoIds.stream().findFirst().orElse(0)})}" alt="photo">
 								</div>
 
 								<div class="carousel-item" th:each="id : ${post.getPhotoIds().stream().skip(1).toArray()}">
@@ -49,11 +46,13 @@
 								</div>
 
 							</div>
-							<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+							<button class="carousel-control-prev" type="button"
+							        data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
 								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 								<span class="visually-hidden">Previous</span>
 							</button>
-							<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+							<button class="carousel-control-next" type="button"
+							        data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
 								<span class="carousel-control-next-icon" aria-hidden="true"></span>
 								<span class="visually-hidden">Next</span>
 							</button>

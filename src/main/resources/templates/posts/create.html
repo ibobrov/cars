@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+	<link th:href="@{/css/bootstrap.5.3.0/bootstrap.css}" rel="stylesheet">
+	<script th:src="@{/js/popper.2.11.8.umd/popper.min.js}"></script>
+	<script th:src="@{/js/bootstrap.5.3.0/bootstrap.min.js}"></script>
+	<title>Create new post</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+	<div th:insert="blocks/header :: header"></div>
+	<div th:insert="blocks/loginModal :: login"></div>
+	<div th:insert="blocks/registerMadal :: sign"></div>
+
+	<div class="album pt-4 pb-4 py-2 bg-body-tertiary min-vh-100">
+		<div class="container">
+
+			<div class="p-4 pb-0 rounded-3 border shadow-lg">
+
+
+				<form class="mb-3" th:action="@{/posts/create}" method="post" enctype="multipart/form-data">
+
+					<label for="model"><b>Model</b></label>
+					<select class="form-control" id="model" name="carModel" required>
+						<option th:each="model : ${models.stream().sorted().toList()}"
+						        th:value="${model.brand} + ' ' + ${model.name}" th:text="${model.brand} + ' ' + ${model.name}">
+						</option>
+					</select>
+
+					<label for="engine"><b>Engine</b></label>
+					<select class="form-control" id="engine" name="engineId" required>
+						<option th:each="engine : ${engines.stream().sorted().toList()}" th:value="${engine.id}" th:text="${engine.name}">
+						</option>
+					</select>
+
+					<label for="year" class="form-label"><b>Year</b></label>
+					<input type="number" class="form-control" id="year" name="carYear" value="2000" required>
+
+					<label for="price" class="form-label"><b>Price</b></label>
+					<input type="number" class="form-control" id="price" name="price" value="0" required>
+
+					<label for="odometer" class="form-label"><b>Odometer</b></label>
+					<input type="number" class="form-control" id="odometer" name="carOdometer" value="0" required>
+
+					<label for="description" class="form-label"><b>Comment</b></label>
+					<textarea type="text" class="form-control" id="description" name="description"
+					          placeholder="Description" required></textarea>
+
+					<label class="form-label" for="files">Select files:</label>
+					<input class="form-control form-control-sm" type="file" id="files" name="files" multiple><br><br>
+
+					<div class="mt-2 text-center">
+						<button class="btn btn-danger col-3 m-2" onclick="window.history.back()">Back</button>
+						<button class="btn btn-primary col-3 m-2" type="submit">Save</button>
+					</div>
+				</form>
+
+
+			</div>
+		</div>
+	</div>
+
+	<div th:insert="blocks/footer :: footer"></div>
+</div>
+</body>
+</html>

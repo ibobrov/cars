@@ -1,10 +1,6 @@
 package ru.job4j.cars.model;
 
-import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,23 +12,27 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(builderMethodName = "of")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @ToString.Include
     private int id;
-    @NotNull
+    @ToString.Include
     private String description;
-    @NotNull
     @Column(name = "creation_date")
+    @ToString.Include
     private LocalDateTime creationDate;
-    private Long price;
+    @ToString.Include
+    private long price;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     private Car car;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "post_id")
     private Set<PriceHistory> priceHistories = new HashSet<>();
     @ManyToMany(fetch = FetchType.LAZY)

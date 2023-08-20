@@ -2,25 +2,56 @@ package ru.job4j.cars.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.job4j.cars.dto.NewPostDto;
 import ru.job4j.cars.dto.PostDto;
 import ru.job4j.cars.dto.PostPreview;
-import ru.job4j.cars.model.File;
-import ru.job4j.cars.model.Post;
+import ru.job4j.cars.model.*;
 import ru.job4j.cars.repository.CarRepository;
+import ru.job4j.cars.repository.OwnerRepository;
 import ru.job4j.cars.repository.PostRepository;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
 public class SimplePostService implements PostService {
     private final PostRepository postRepo;
     private final CarRepository carRepo;
+    private final OwnerRepository ownerRepo;
     private static final Comparator<Post> REVERSED_POST_COMPARATOR =
             Comparator.comparing(Post::getId).reversed();
+
+    @Override
+    public boolean create(NewPostDto newPost, User user, Set<File> photos) {
+        Optional<Owner> owner = ownerRepo.findByUser(user);
+        Car car = null;
+        if (owner.isPresent()) {
+            car = Car.of()
+                    .name(newPost.getCarModel().toUpperCase())
+                    .year(newPost.getCarYear())
+                    .odometer(newPost.getCarOdometer())
+                    .engine(new Engine(newPost.getEngineId()))
+                    .owner(owner.get())
+                    .owners(Set.of(owner.get()))
+                    .build();
+            carRepo.save(car);
+        }
+        Post post = null;
+        if (car != null) {
+            post = Post.of()
+                    .description(newPost.getDescription())
+                    .creationDate(LocalDateTime.now())
+                    .price(newPost.getPrice())
+                    .user(user)
+                    .car(car)
+                    .priceHistories(Set.of(new PriceHistory(0, 0, newPost.getPrice(), LocalDateTime.now())))
+                    .participates(Set.of())
+                    .files(photos)
+                    .build();
+        }
+        return postRepo.save(post).getId() != 0;
+    }
 
     @Override
     public Optional<PostDto> findById(int id) {

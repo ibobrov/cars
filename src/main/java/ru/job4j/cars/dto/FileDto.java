@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class DtoFile {
+public class FileDto {
     private String name;
     private byte[] content;
 }
