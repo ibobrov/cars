@@ -27,7 +27,7 @@ public class UserController {
         var userOptional = userService.save(user);
         if (userOptional.isEmpty()) {
             model.addAttribute("error",
-                    "The user with this mail exists, or the data is incorrect.");
+                    "The user with this login exists, or the data is incorrect.");
             return "users/register";
         }
         return loginUser(referrer, user, model, session);
@@ -36,8 +36,8 @@ public class UserController {
     @PostMapping("/registerRedirect")
     public String registerRedirect(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
                            @ModelAttribute User user, Model model, HttpSession session) {
-        register(referrer, user, model, session);
-        return "redirect:/";
+        var link = register(referrer, user, model, session);
+        return link.equals("users/register") ? "users/register" : "redirect:/";
     }
 
     @GetMapping("/login")
@@ -60,8 +60,8 @@ public class UserController {
     @PostMapping("/loginRedirect")
     public String loginUserRedirect(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
                             @ModelAttribute User user, Model model, HttpSession session) {
-        loginUser(referrer, user, model, session);
-        return "redirect:/";
+        var link = loginUser(referrer, user, model, session);
+        return link.equals("users/login") ? "users/login" : "redirect:/";
     }
 
     @GetMapping("/logout")

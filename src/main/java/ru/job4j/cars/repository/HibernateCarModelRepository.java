@@ -15,7 +15,7 @@ import static java.util.Optional.empty;
 @Repository
 @AllArgsConstructor
 public class HibernateCarModelRepository implements CarModelRepository {
-    private final Logger logger = LoggerFactory.getLogger(HibernateEngineRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(HibernateCarModelRepository.class);
     private final CrudRepository crudRepo;
 
     @Override

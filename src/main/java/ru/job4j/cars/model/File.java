@@ -21,6 +21,10 @@ public class File {
     private String name;
     private String path;
 
+    public File(int id) {
+        this.id = id;
+    }
+
     public File(String name, String path) {
         this.name = name;
         this.path = path;

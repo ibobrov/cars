@@ -45,7 +45,8 @@ public class HibernatePostRepository implements PostRepository {
     private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
             WITH_PHOTO = (builder, posts) -> builder.isNotEmpty(posts.get("files"));
     private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
-            SELECT_LAST_DAY = (builder, posts) -> builder.between(posts.get("creationDate"), now().minusDays(1), now());
+            SELECT_LAST_DAY = (builder, posts) -> builder.between(posts.get("creationDate"),
+                                                                    now().minusDays(1), now());
 
     @Override
     public Post save(Post post) {

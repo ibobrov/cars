@@ -25,18 +25,6 @@ public class CrudRepository {
         );
     }
 
-    public void run(String query, Map<String, Object> args) {
-        Consumer<Session> command = session -> {
-            var sq = session
-                    .createQuery(query);
-            for (Map.Entry<String, Object> arg : args.entrySet()) {
-                sq.setParameter(arg.getKey(), arg.getValue());
-            }
-            sq.executeUpdate();
-        };
-        run(command);
-    }
-
     public <T> List<T> runAndBack(Function<Session, List<T>> command) {
         return tx(command);
     }
@@ -60,18 +48,6 @@ public class CrudRepository {
         return tx(command);
     }
 
-    public <T> List<T> query(String query, Class<T> cl, Map<String, Object> args) {
-        Function<Session, List<T>> command = session -> {
-            var sq = session
-                    .createQuery(query, cl);
-            for (Map.Entry<String, Object> arg : args.entrySet()) {
-                sq.setParameter(arg.getKey(), arg.getValue());
-            }
-            return sq.list();
-        };
-        return tx(command);
-    }
-
     public int executeUpdate(String query, Map<String, Object> args) {
         Function<Session, Integer> command = session -> {
             var sq = session
@@ -85,20 +61,12 @@ public class CrudRepository {
     }
 
     private <T> T tx(Function<Session, T> command) {
-        final var session = sf.openSession();
-        Transaction transaction = null;
-        try {
+        try (var session = sf.openSession()) {
+            Transaction transaction;
             transaction = session.beginTransaction();
             T rsl = command.apply(session);
             transaction.commit();
             return rsl;
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            session.close();
         }
     }
 }

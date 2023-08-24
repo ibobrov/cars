@@ -2,6 +2,7 @@ package ru.job4j.cars.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.job4j.cars.dto.FileDto;
 import ru.job4j.cars.dto.NewPostDto;
 import ru.job4j.cars.dto.PostDto;
 import ru.job4j.cars.dto.PostPreview;
@@ -19,11 +20,12 @@ public class SimplePostService implements PostService {
     private final PostRepository postRepo;
     private final CarRepository carRepo;
     private final OwnerRepository ownerRepo;
+    private final FileService fileService;
     private static final Comparator<Post> REVERSED_POST_COMPARATOR =
             Comparator.comparing(Post::getId).reversed();
 
     @Override
-    public boolean create(NewPostDto newPost, User user, Set<File> photos) {
+    public boolean create(NewPostDto newPost, User user, List<FileDto> files) {
         Optional<Owner> owner = ownerRepo.findByUser(user);
         Car car = null;
         if (owner.isPresent()) {
@@ -47,10 +49,10 @@ public class SimplePostService implements PostService {
                     .car(car)
                     .priceHistories(Set.of(new PriceHistory(0, 0, newPost.getPrice(), LocalDateTime.now())))
                     .participates(Set.of())
-                    .files(photos)
+                    .files(saveFiles(files))
                     .build();
         }
-        return postRepo.save(post).getId() != 0;
+        return post != null && postRepo.save(post).getId() != 0;
     }
 
     @Override
@@ -132,5 +134,13 @@ public class SimplePostService implements PostService {
                     dtoBuilder.carOdometer(car.getOdometer());
                 });
         return dtoBuilder.build();
+    }
+
+    private Set<File> saveFiles(List<FileDto> files) {
+        var rsl = new HashSet<File>();
+        for (var file : files) {
+            rsl.add(fileService.save(file));
+        }
+        return rsl;
     }
 }

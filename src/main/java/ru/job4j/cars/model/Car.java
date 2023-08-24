@@ -36,4 +36,8 @@ public class Car {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "history_owners")
     private Set<Owner> owners = new HashSet<>();
+
+    public Car(int id) {
+        this.id = id;
+    }
 }

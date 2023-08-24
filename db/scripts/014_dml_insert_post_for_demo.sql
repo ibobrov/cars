@@ -1,4 +1,6 @@
 INSERT INTO owners(name, user_id) VALUES ('Manager Anton', 1);
+INSERT INTO owners(name, user_id) VALUES ('Manager Aleksey', 2);
+INSERT INTO owners(name, user_id) VALUES ('Manager Ivan', 3);
 
 INSERT INTO engines(name) VALUES ('3.0L 6');
 INSERT INTO cars(name, car_year, odometer, owner_id, engine_id) VALUES ('BMW X5 XDRIVE35D', 2015, 78561, 1, 1);
