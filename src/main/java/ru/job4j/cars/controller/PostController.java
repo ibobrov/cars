@@ -53,12 +53,11 @@ public class PostController {
     @PostMapping("/create")
     public String create(List<MultipartFile> files, HttpSession session, NewPostDto dto, Model model) {
         var user = (User) session.getAttribute("user");
-        System.out.println(dto);
         if (!postService.create(dto, user, convertFiles(files))) {
             model.addAttribute("message", "Failed. Not added.");
             return "errors/error";
         }
-        return "redirect:/index";
+        return "redirect:/posts/catalog";
     }
 
     @GetMapping("/last_day")
