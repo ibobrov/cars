@@ -54,7 +54,18 @@ Spring Framework is used as the **main framework**. The pages are developed with
 
 ![db_schema.JPG](img/db_schema.png)
 
+You can contact me using the contacts in my profile.
+
 ---
 
-You can contact me using the contacts in my profile.
-Also try the live demo [here](https://cinemarailway-production.up.railway.app/).
+**App screenshots**
+
+![main_page.png](img/main_page.png)
+
+![latest.png](img/latest.png)
+
+![post.png](img/post.png)
+
+![filters.png](img/filters.png)
+
+![authorization](img/authorization.png)
