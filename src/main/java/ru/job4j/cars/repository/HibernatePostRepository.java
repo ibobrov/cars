@@ -41,12 +41,21 @@ public class HibernatePostRepository implements PostRepository {
                                               LEFT JOIN FETCH p.priceHistories
                                               LEFT JOIN FETCH p.participates
                                               LEFT JOIN FETCH p.files
+                                              ORDER BY p.id DESC
+                                              """;
+    private final static String GET_LAST_DAY = """
+                                              SELECT DISTINCT p
+                                              FROM Post p
+                                              LEFT JOIN FETCH p.user
+                                              LEFT JOIN FETCH p.car
+                                              LEFT JOIN FETCH p.priceHistories
+                                              LEFT JOIN FETCH p.participates
+                                              LEFT JOIN FETCH p.files
+                                              WHERE p.creationDate BETWEEN :start AND :end
+                                              ORDER BY p.id DESC
                                               """;
     private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
             WITH_PHOTO = (builder, posts) -> builder.isNotEmpty(posts.get("files"));
-    private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
-            SELECT_LAST_DAY = (builder, posts) -> builder.between(posts.get("creationDate"),
-                                                                    now().minusDays(1), now());
 
     @Override
     public Post save(Post post) {
@@ -107,7 +116,8 @@ public class HibernatePostRepository implements PostRepository {
     public List<Post> getLastDay() {
         List<Post> rsl = List.of();
         try {
-            rsl = getByCriteria(SELECT_LAST_DAY);
+            rsl = crudRepo.query(GET_LAST_DAY, Post.class,
+                    Map.of("start", now().minusDays(1), "end", now()));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -141,7 +151,7 @@ public class HibernatePostRepository implements PostRepository {
     }
 
     @Override
-    public List<Post> getByFilter(Map<String, String> filters) {
+    public List<Post> findByFilter(Map<String, String> filters) {
         BiFunction<CriteriaBuilder, Root<Post>, Predicate> biFunction =
                 (builder, posts) -> createPredicate(filters, builder, posts);
         return getByCriteria(biFunction);

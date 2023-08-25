@@ -30,7 +30,7 @@ public class Post {
     private long price;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Car car;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "post_id")

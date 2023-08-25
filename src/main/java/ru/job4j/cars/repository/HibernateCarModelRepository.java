@@ -66,7 +66,7 @@ public class HibernateCarModelRepository implements CarModelRepository {
     public List<CarModel> getAll() {
         List<CarModel> rsl = List.of();
         try {
-            rsl = crudRepo.query("FROM CarModel", CarModel.class);
+            rsl = crudRepo.query("FROM CarModel m ORDER BY m.brand, m.name", CarModel.class);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

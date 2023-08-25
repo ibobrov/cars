@@ -24,5 +24,5 @@ public interface PostRepository {
 
     List<Post> getBrand(String mark);
 
-    List<Post> getByFilter(Map<String, String> filters);
+    List<Post> findByFilter(Map<String, String> filters);
 }

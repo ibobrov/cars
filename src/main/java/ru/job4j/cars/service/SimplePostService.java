@@ -21,38 +21,35 @@ public class SimplePostService implements PostService {
     private final CarRepository carRepo;
     private final OwnerRepository ownerRepo;
     private final FileService fileService;
-    private static final Comparator<Post> REVERSED_POST_COMPARATOR =
-            Comparator.comparing(Post::getId).reversed();
 
     @Override
     public boolean create(NewPostDto newPost, User user, List<FileDto> files) {
-        Optional<Owner> owner = ownerRepo.findByUser(user);
-        Car car = null;
+        var rsl = false;
+        var owner = ownerRepo.findByUser(user);
         if (owner.isPresent()) {
-            car = Car.of()
-                    .name(newPost.getCarModel().toUpperCase())
-                    .year(newPost.getCarYear())
-                    .odometer(newPost.getCarOdometer())
-                    .engine(new Engine(newPost.getEngineId()))
-                    .owner(owner.get())
-                    .owners(Set.of(owner.get()))
-                    .build();
-            carRepo.save(car);
-        }
-        Post post = null;
-        if (car != null) {
-            post = Post.of()
+            var post = Post.of()
                     .description(newPost.getDescription())
                     .creationDate(LocalDateTime.now())
                     .price(newPost.getPrice())
                     .user(user)
-                    .car(car)
+                    .car(
+                            Car.of()
+                                    .id(0)
+                                    .name(newPost.getCarModel().toUpperCase())
+                                    .year(newPost.getCarYear())
+                                    .odometer(newPost.getCarOdometer())
+                                    .engine(new Engine(newPost.getEngineId()))
+                                    .owner(owner.get())
+                                    .owners(Set.of(owner.get()))
+                                    .build()
+                    )
                     .priceHistories(Set.of(new PriceHistory(0, 0, newPost.getPrice(), LocalDateTime.now())))
                     .participates(Set.of())
                     .files(saveFiles(files))
                     .build();
+            rsl = postRepo.save(post).getId() != 0;
         }
-        return post != null && postRepo.save(post).getId() != 0;
+        return rsl;
     }
 
     @Override
@@ -65,30 +62,24 @@ public class SimplePostService implements PostService {
         filters.values().removeAll(List.of(""));
         List<PostPreview> rsl;
         if (filters.isEmpty()) {
-            rsl =  getAll();
+            rsl = getAll();
         } else {
             if (filters.keySet().containsAll(List.of("brand", "model"))) {
                 filters.remove("brand");
             }
-            rsl = postRepo.getByFilter(filters).stream().map(this::assemblePostPreview).toList();
+            rsl = postRepo.findByFilter(filters).stream().map(this::assemblePostPreview).toList();
         }
         return rsl;
     }
 
     @Override
     public List<PostPreview> getRecommendation(int itemCount) {
-        return postRepo.getAll().stream()
-                .sorted(REVERSED_POST_COMPARATOR)
-                .limit(itemCount)
-                .map(this::assemblePostPreview)
-                .toList();
+        return postRepo.getAll().stream().limit(itemCount).map(this::assemblePostPreview).toList();
     }
 
     @Override
     public List<PostPreview> getLastDay() {
-        return postRepo.getLastDay().stream()
-                .sorted(REVERSED_POST_COMPARATOR)
-                .map(this::assemblePostPreview).toList();
+        return postRepo.getLastDay().stream().map(this::assemblePostPreview).toList();
     }
 
     @Override

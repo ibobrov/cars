@@ -66,7 +66,7 @@ public class HibernateEngineRepository implements EngineRepository {
     public List<Engine> getAll() {
         List<Engine> rsl = List.of();
         try {
-            rsl = crudRepo.query("FROM Engine", Engine.class);
+            rsl = crudRepo.query("FROM Engine e ORDER BY e.name", Engine.class);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

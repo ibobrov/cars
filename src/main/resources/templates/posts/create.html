@@ -25,14 +25,14 @@
 
 					<label for="model"><b>Model</b></label>
 					<select class="form-control" id="model" name="carModel" required>
-						<option th:each="model : ${models.stream().sorted().toList()}"
+						<option th:each="model : ${models}"
 						        th:value="${model.brand} + ' ' + ${model.name}" th:text="${model.brand} + ' ' + ${model.name}">
 						</option>
 					</select>
 
 					<label for="engine"><b>Engine</b></label>
 					<select class="form-control" id="engine" name="engineId" required>
-						<option th:each="engine : ${engines.stream().sorted().toList()}" th:value="${engine.id}" th:text="${engine.name}">
+						<option th:each="engine : ${engines}" th:value="${engine.id}" th:text="${engine.name}">
 						</option>
 					</select>
 

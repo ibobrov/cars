@@ -1,1 +1,1 @@
-ALTER TABLE posts ADD COLUMN car_id  INT REFERENCES cars(id) NOT NULL;
+ALTER TABLE posts ADD COLUMN car_id  INT REFERENCES cars(id);
