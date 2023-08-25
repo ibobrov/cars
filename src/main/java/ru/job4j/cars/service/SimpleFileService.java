@@ -1,5 +1,7 @@
 package ru.job4j.cars.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.job4j.cars.dto.FileDto;
@@ -14,6 +16,7 @@ import java.util.UUID;
 
 @Service
 public class SimpleFileService implements FileService {
+    private final Logger logger = LoggerFactory.getLogger(SimpleFileService.class);
     private final FileRepository fileRepository;
     private final String storageDirectory;
 
@@ -28,7 +31,7 @@ public class SimpleFileService implements FileService {
         try {
             Files.createDirectories(Path.of(path));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -53,8 +56,9 @@ public class SimpleFileService implements FileService {
         try {
             return Files.readAllBytes(Path.of(path));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage(), e);
         }
+        return new byte[]{};
     }
 
     private String getNewFilePath(String sourceName) {
@@ -65,7 +69,7 @@ public class SimpleFileService implements FileService {
         try {
             Files.write(Path.of(path), content);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage(), e);
         }
     }
 }
