@@ -17,12 +17,12 @@ import java.util.UUID;
 @Service
 public class SimpleFileService implements FileService {
     private final Logger logger = LoggerFactory.getLogger(SimpleFileService.class);
-    private final FileRepository fileRepository;
+    private final FileRepository fileRepo;
     private final String storageDirectory;
 
     public SimpleFileService(FileRepository fileRepository,
                              @Value("${file.directory}") String storageDirectory) {
-        this.fileRepository = fileRepository;
+        this.fileRepo = fileRepository;
         this.storageDirectory = storageDirectory;
         createStorageDirectory(storageDirectory);
     }
@@ -39,12 +39,12 @@ public class SimpleFileService implements FileService {
     public File save(FileDto fileDto) {
         var path = getNewFilePath(fileDto.getName());
         writeFileBytes(path, fileDto.getContent());
-        return fileRepository.save(new File(fileDto.getName(), path));
+        return fileRepo.save(new File(fileDto.getName(), path));
     }
 
     @Override
     public Optional<FileDto> getFileById(int id) {
-        var fileOptional = fileRepository.findById(id);
+        var fileOptional = fileRepo.findById(id);
         if (fileOptional.isEmpty()) {
             return Optional.empty();
         }

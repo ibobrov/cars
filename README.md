@@ -1,9 +1,9 @@
-# job4j_cars
+# Cars
 
-[![Java CI with Maven](https://github.com/ibobrov/job4j_cars/actions/workflows/maven.yml/badge.svg)](https://github.com/ibobrov/job4j_cars/actions/workflows/maven.yml)
-[![codecov](https://codecov.io/github/ibobrov/job4j_cars/branch/master/graph/badge.svg?token=I2vmQXZef5)](https://codecov.io/github/ibobrov/job4j_cars)
+[![Java CI with Maven](https://github.com/ibobrov/cars/actions/workflows/maven.yml/badge.svg)](https://github.com/ibobrov/cars/actions/workflows/maven.yml)
+[![codecov](https://codecov.io/github/ibobrov/cars/branch/master/graph/badge.svg?token=I2vmQXZef5)](https://codecov.io/github/ibobrov/cars)
 
-job4j_cars is a web application focused on the back end of a car sales/buy website. In particular, the use of the Hibernate framework.
+The cars is a web application focused on the back end of a car sales/buy website. In particular, the use of the Hibernate framework.
 I wrote the layout adapted for phones and tablets. All layouts were used under a free license.
 
 **The main logic of the App:**
@@ -55,6 +55,7 @@ Spring Framework is used as the **main framework**. The pages are developed with
 ![db_schema.JPG](img/db_schema.png)
 
 You can contact me using the contacts in my profile.
+Also try the live demo [here](https://carsrailway-production.up.railway.app/).
 
 ---
 

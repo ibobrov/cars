@@ -14,10 +14,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * The base behavior is checked. Upon request, a service finds
- * the file and transfer data byte by byte.
- */
 class FileControllerTest {
     private final FileService fileService = mock(FileService.class);
     private final FileController fileController = new FileController(fileService);

@@ -7,9 +7,6 @@ import ru.job4j.cars.service.PostService;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 
-/**
- * The base behavior is checked.
- */
 class IndexControllerTest {
     private final PostService postService = mock(PostService.class);
     private final ConcurrentModel model = new ConcurrentModel();

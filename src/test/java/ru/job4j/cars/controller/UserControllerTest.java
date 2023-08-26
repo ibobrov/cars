@@ -13,10 +13,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * It checks the basic behavior of controllers, returning a negative
- * result and wrapping some methods in redirect.
- */
 class UserControllerTest {
     private final UserService userService = mock(UserService.class);
     private final UserController userController = new UserController(userService);

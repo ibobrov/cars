@@ -10,9 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Check that the returned controller pages match the status in request.
- */
 class CustomErrorControllerTest {
     private final CustomErrorController errorController = new CustomErrorController();
     private final HttpServletRequest request = mock(HttpServletRequest.class);
