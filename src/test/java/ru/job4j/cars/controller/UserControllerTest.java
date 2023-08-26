@@ -31,15 +31,15 @@ class UserControllerTest {
 
     @Test
     public void whenRegisterUserThenLoginUserAndRedirectToReferrer() {
-        when(userService.save(any())).thenReturn(Optional.of(user));
-        var view = userController.register("", user, new ConcurrentModel(), session);
+        when(userService.save(any(), any())).thenReturn(Optional.of(user));
+        var view = userController.register("", user, "ilya", new ConcurrentModel(), session);
         assertThat(view).isEqualTo("users/login");
     }
 
     @Test
     public void whenRegisterUserThenUserNotCreated() {
-        when(userService.save(any())).thenReturn(empty());
-        var view = userController.register("", user, model, session);
+        when(userService.save(any(), any())).thenReturn(empty());
+        var view = userController.register("", user, "ilya", model, session);
         assertThat(view).isEqualTo("users/register");
         assertThat(model.getAttribute("error"))
                 .isEqualTo("The user with this login exists, or the data is incorrect.");
@@ -47,15 +47,15 @@ class UserControllerTest {
 
     @Test
     public void whenRegisterUserAndRedirectThenUserCreatedAndRedirectToIndex() {
-        when(userService.save(any())).thenReturn(Optional.of(user));
-        var view = userController.registerRedirect("", user, model, session);
+        when(userService.save(any(), any())).thenReturn(Optional.of(user));
+        var view = userController.registerRedirect("", user, "ilya", model, session);
         assertThat(view).isEqualTo("redirect:/");
     }
 
     @Test
     public void whenTryRegisterAndRedirectToIndexNotExistUserThenRedirectToRegisterAgain() {
-        when(userService.save(any())).thenReturn(empty());
-        var view = userController.registerRedirect("", user, model, session);
+        when(userService.save(any(), any())).thenReturn(empty());
+        var view = userController.registerRedirect("", user, "ilya", model, session);
         assertThat(view).isEqualTo("users/register");
     }
 

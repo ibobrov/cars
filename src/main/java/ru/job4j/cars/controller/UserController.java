@@ -23,8 +23,9 @@ public class UserController {
 
     @PostMapping("/register")
     public String register(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
-                           @ModelAttribute User user, Model model, HttpSession session) {
-        var userOptional = userService.save(user);
+                           @ModelAttribute User user, @ModelAttribute(name = "fullName") String fullName, Model model,
+                           HttpSession session) {
+        var userOptional = userService.save(user, fullName);
         if (userOptional.isEmpty()) {
             model.addAttribute("error",
                     "The user with this login exists, or the data is incorrect.");
@@ -35,8 +36,9 @@ public class UserController {
 
     @PostMapping("/registerRedirect")
     public String registerRedirect(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
-                           @ModelAttribute User user, Model model, HttpSession session) {
-        var link = register(referrer, user, model, session);
+                                   @ModelAttribute User user, @ModelAttribute(name = "fullName") String fullName,
+                                   Model model, HttpSession session) {
+        var link = register(referrer, user, fullName, model, session);
         return link.equals("users/register") ? "users/register" : "redirect:/";
     }
 
@@ -59,7 +61,7 @@ public class UserController {
 
     @PostMapping("/loginRedirect")
     public String loginUserRedirect(@RequestHeader(value = HttpHeaders.REFERER, required = false) final String referrer,
-                            @ModelAttribute User user, Model model, HttpSession session) {
+                                    @ModelAttribute User user, Model model, HttpSession session) {
         var link = loginUser(referrer, user, model, session);
         return link.equals("users/login") ? "users/login" : "redirect:/";
     }
