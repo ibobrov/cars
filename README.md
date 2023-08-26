@@ -9,7 +9,7 @@ I wrote the layout adapted for phones and tablets. All layouts were used under a
 **The main logic of the App:**
 * registration, sign in, sign out
 * displaying all posts on last day
-* create and update post
+* create and update post (on click profile)
 * search car by filters in catalog
 * displaying full information about one chosen post
 
@@ -69,3 +69,5 @@ You can contact me using the contacts in my profile.
 ![filters.png](img/filters.png)
 
 ![authorization](img/authorization.png)
+
+![your_posts](img/your_posts.png)

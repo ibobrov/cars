@@ -2,10 +2,7 @@ package ru.job4j.cars.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.job4j.cars.dto.FileDto;
-import ru.job4j.cars.dto.NewPostDto;
-import ru.job4j.cars.dto.PostDto;
-import ru.job4j.cars.dto.PostPreview;
+import ru.job4j.cars.dto.*;
 import ru.job4j.cars.model.*;
 import ru.job4j.cars.repository.CarRepository;
 import ru.job4j.cars.repository.OwnerRepository;
@@ -31,6 +28,7 @@ public class SimplePostService implements PostService {
                     .description(newPost.getDescription())
                     .creationDate(LocalDateTime.now())
                     .price(newPost.getPrice())
+                    .visibility(true)
                     .user(user)
                     .car(
                             Car.of()
@@ -73,8 +71,15 @@ public class SimplePostService implements PostService {
     }
 
     @Override
+    public List<OwnerPostPreview> findByUser(int id) {
+        return postRepo.findByUser(id).stream().map(
+                post -> new OwnerPostPreview(assemblePostPreview(post), post.isVisibility())
+        ).toList();
+    }
+
+    @Override
     public List<PostPreview> getRecommendation(int itemCount) {
-        return postRepo.getAll().stream().limit(itemCount).map(this::assemblePostPreview).toList();
+        return postRepo.getVisible().stream().limit(itemCount).map(this::assemblePostPreview).toList();
     }
 
     @Override
@@ -84,7 +89,12 @@ public class SimplePostService implements PostService {
 
     @Override
     public List<PostPreview> getAll() {
-        return postRepo.getAll().stream().map(this::assemblePostPreview).toList();
+        return postRepo.getVisible().stream().map(this::assemblePostPreview).toList();
+    }
+
+    @Override
+    public boolean hide(int id) {
+        return postRepo.hide(id);
     }
 
     private PostPreview assemblePostPreview(Post post) {

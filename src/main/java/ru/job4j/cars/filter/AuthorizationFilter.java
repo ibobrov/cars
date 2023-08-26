@@ -29,6 +29,8 @@ public class AuthorizationFilter extends HttpFilter {
     }
 
     private boolean isAuthRequired(String uri) {
-        return uri.startsWith("/posts/create");
+        return uri.startsWith("/posts/create")
+                || uri.startsWith("/posts/user_posts")
+                || uri.startsWith("/posts/hide");
     }
 }

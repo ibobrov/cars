@@ -21,4 +21,5 @@
     <include file="scripts/014_dml_insert_post_for_demo.sql" relativeToChangelogFile="true"/>
     <include file="scripts/015_ddl_create_models_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/016_dml_insert_models_for_demo.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/017_ddl_add_column_visibility_to_post.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

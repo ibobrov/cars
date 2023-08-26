@@ -31,7 +31,7 @@ public class HibernatePostRepository implements PostRepository {
                                               LEFT JOIN FETCH p.priceHistories
                                               LEFT JOIN FETCH p.participates
                                               LEFT JOIN FETCH p.files
-                                              WHERE p.id = :id
+                                              WHERE p.id = :id AND p.visibility = true
                                               """;
     private final static String GET_ALL = """
                                               SELECT DISTINCT p
@@ -43,6 +43,17 @@ public class HibernatePostRepository implements PostRepository {
                                               LEFT JOIN FETCH p.files
                                               ORDER BY p.id DESC
                                               """;
+    private final static String GET_VISIBLE = """
+                                              SELECT DISTINCT p
+                                              FROM Post p
+                                              LEFT JOIN FETCH p.user
+                                              LEFT JOIN FETCH p.car
+                                              LEFT JOIN FETCH p.priceHistories
+                                              LEFT JOIN FETCH p.participates
+                                              LEFT JOIN FETCH p.files
+                                              WHERE p.visibility = true
+                                              ORDER BY p.id DESC
+                                              """;
     private final static String GET_LAST_DAY = """
                                               SELECT DISTINCT p
                                               FROM Post p
@@ -51,7 +62,18 @@ public class HibernatePostRepository implements PostRepository {
                                               LEFT JOIN FETCH p.priceHistories
                                               LEFT JOIN FETCH p.participates
                                               LEFT JOIN FETCH p.files
-                                              WHERE p.creationDate BETWEEN :start AND :end
+                                              WHERE p.creationDate BETWEEN :start AND :end AND p.visibility = true
+                                              ORDER BY p.id DESC
+                                              """;
+    private final static String FIND_BY_USER = """
+                                              SELECT DISTINCT p
+                                              FROM Post p
+                                              LEFT JOIN FETCH p.user
+                                              LEFT JOIN FETCH p.car
+                                              LEFT JOIN FETCH p.priceHistories
+                                              LEFT JOIN FETCH p.participates
+                                              LEFT JOIN FETCH p.files
+                                              WHERE p.user.id = :id
                                               ORDER BY p.id DESC
                                               """;
     private final static BiFunction<CriteriaBuilder, Root<Post>, Predicate>
@@ -95,6 +117,17 @@ public class HibernatePostRepository implements PostRepository {
         Optional<Post> rsl = empty();
         try {
             rsl = crudRepo.optional(FIND_BY_ID, Post.class, Map.of("id", id));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return rsl;
+    }
+
+    @Override
+    public List<Post> getVisible() {
+        List<Post> rsl = List.of();
+        try {
+            rsl = crudRepo.query(GET_VISIBLE, Post.class);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -157,6 +190,30 @@ public class HibernatePostRepository implements PostRepository {
         return getByCriteria(biFunction);
     }
 
+    @Override
+    public List<Post> findByUser(int id) {
+        List<Post> rsl = List.of();
+        try {
+            rsl = crudRepo.query(FIND_BY_USER, Post.class,
+                    Map.of("id", id));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return rsl;
+    }
+
+    @Override
+    public boolean hide(int id) {
+        var rsl = false;
+        try {
+            rsl = crudRepo.executeUpdate("UPDATE Post p SET p.visibility = false WHERE id = :id",
+                    Map.of("id", id)) > 0;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return rsl;
+    }
+
     private List<Post> getByCriteria(BiFunction<CriteriaBuilder, Root<Post>, Predicate> biFunction) {
         List<Post> rsl = List.of();
         try {
@@ -183,39 +240,31 @@ public class HibernatePostRepository implements PostRepository {
         posts.fetch("files", JoinType.LEFT);
     }
 
-    private Predicate andOrReturn(Predicate one, Predicate two, CriteriaBuilder builder) {
-        if (one == null) {
-            return two;
-        } else {
-            return builder.and(one, two);
-        }
-    }
-
     private Predicate createPredicate(Map<String, String> filters, CriteriaBuilder builder, Root<Post> posts) {
-        Predicate predicate = null;
+        var predicate = builder.isTrue(posts.get("visibility"));
         var keys = filters.keySet();
         for (var key : keys) {
             switch (key) {
                 case "brand" -> {
                     var byBrand = getBrandBiFunc(filters.get("brand")).apply(builder, posts);
-                    predicate = andOrReturn(predicate, byBrand, builder);
+                    predicate = builder.and(predicate, byBrand);
                 }
                 case "model" -> {
                     var byModel = getBrandBiFunc(filters.get("model")).apply(builder, posts);
-                    predicate = andOrReturn(predicate, byModel, builder);
+                    predicate = builder.and(predicate, byModel);
                 }
                 case "fromPrice" -> {
-                    var byPrice = builder.greaterThanOrEqualTo(posts.get("price"), filters.get("fromPrice"));
-                    predicate = andOrReturn(predicate, byPrice, builder);
+                    var byMinPrice = builder.greaterThanOrEqualTo(posts.get("price"), filters.get("fromPrice"));
+                    predicate = builder.and(predicate, byMinPrice);
                 }
                 case "toPrice" -> {
-                    var byPrice = builder.lessThanOrEqualTo(posts.get("price"), filters.get("toPrice"));
-                    predicate = andOrReturn(predicate, byPrice, builder);
+                    var byMaxPrice = builder.lessThanOrEqualTo(posts.get("price"), filters.get("toPrice"));
+                    predicate = builder.and(predicate, byMaxPrice);
                 }
                 case "withoutPhoto" -> {
                     if ("false".equals(filters.get("withoutPhoto"))) {
                         var photoPredicate = WITH_PHOTO.apply(builder, posts);
-                        predicate = andOrReturn(predicate, photoPredicate, builder);
+                        predicate = builder.and(predicate, photoPredicate);
                     }
                 }
             }

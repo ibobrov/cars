@@ -18,6 +18,8 @@ public interface PostRepository {
 
     List<Post> getAll();
 
+    List<Post> getVisible();
+
     List<Post> getLastDay();
 
     List<Post> getWithPhoto();
@@ -25,4 +27,8 @@ public interface PostRepository {
     List<Post> getBrand(String mark);
 
     List<Post> findByFilter(Map<String, String> filters);
+
+    List<Post> findByUser(int id);
+
+    boolean hide(int id);
 }

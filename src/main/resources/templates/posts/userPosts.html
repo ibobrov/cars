@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+	<link th:href="@{/css/bootstrap.5.3.0/bootstrap.css}" rel="stylesheet">
+	<script th:src="@{/js/popper.2.11.8.umd/popper.min.js}"></script>
+	<script th:src="@{/js/bootstrap.5.3.0/bootstrap.min.js}"></script>
+	<title>Your posts</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+	<div th:insert="blocks/header :: header"></div>
+	<div th:insert="blocks/loginModal :: login"></div>
+	<div th:insert="blocks/registerMadal :: sign"></div>
+
+	<div class="album pt-4 pb-4 py-2 bg-body-tertiary min-vh-100">
+		<div class="container">
+
+			<div class="p-4 rounded-3 border shadow-lg">
+
+				<h3 class="pb-2">Your posts</h3>
+
+				<div th:each="prev: ${prevPosts}">
+					<div class="card m-3 mb-3">
+						<div class="row g-0">
+							<div class="col-5">
+								<img th:src="@{/files/{fileId}(fileId=${prev.getPostPreview().photoId})}" style="height: 10em; width: 15em" class="img-fluid rounded-start object-fit-cover" alt="...">
+							</div>
+							<div class="col-7">
+								<div class="card-body text-end">
+									<h5 th:text="${prev.getPostPreview().title}"></h5>
+									<span th:text="${prev.getPostPreview().odometer} + ' km'"></span><br>
+									<span class="text-body-tertiary" th:text="'$' + ${#strings.replace(#numbers.formatCurrency(prev.getPostPreview().carPrice), ',00&nbsp;¤', '')}"></span>
+									<div th:if="${prev.isVisibility()}">
+										<form class="mt-3" th:action="@{/posts/hide}" method="post">
+											<label>
+												<input name="id" th:value="${prev.getPostPreview().id}" hidden="hidden">
+											</label>
+											<button class="btn btn-primary btn-sm" type="submit">hide</button>
+										</form>
+									</div>
+									<div th:if="${!prev.isVisibility()}">
+										<button class="mt-3 btn btn-primary btn-sm" disabled>hidden</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+
+	<div th:insert="blocks/footer :: footer"></div>
+</div>
+</body>
+</html>

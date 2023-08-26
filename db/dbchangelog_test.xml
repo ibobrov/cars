@@ -18,4 +18,5 @@
     <include file="scripts/012_ddl_create_post_files_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/013_ddl_add_columns_to_car_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/015_ddl_create_models_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/017_ddl_add_column_visibility_to_post.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

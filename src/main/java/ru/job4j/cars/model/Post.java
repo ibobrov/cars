@@ -28,6 +28,7 @@ public class Post {
     private LocalDateTime creationDate;
     @ToString.Include
     private long price;
+    private boolean visibility;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

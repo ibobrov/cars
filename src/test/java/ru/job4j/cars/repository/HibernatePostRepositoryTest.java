@@ -22,6 +22,7 @@ class HibernatePostRepositoryTest {
     private static SessionFactory sf;
     private static HibernatePostRepository postRepo;
     private final User user = new User(1);
+    private final User user2 = new User(2);
     private final Car toyotaSupra = new Car(0, "toyota supra", 1998, 62563,
             new Engine(1), new Owner(1), Set.of());
     private final Car bmwX5 = new Car(0, "bmw x5", 2006, 12543,
@@ -34,7 +35,6 @@ class HibernatePostRepositoryTest {
     private Post bmwX5Post;
     private Post hondaAccordPost;
     private Post bmwM5Post;
-
     private final File file = new File(1);
 
     @BeforeAll
@@ -61,7 +61,7 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenSavePostThenFindByIdSame() {
-        var post = new Post(-1, "desc", now(), 10000L, user, toyotaSupra,
+        var post = new Post(-1, "desc", now(), 10000L, true, user, toyotaSupra,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post);
         assertThat(postRepo.findById(post.getId()).get()).isEqualTo(post);
@@ -74,7 +74,7 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenSaveAndDeletePostThenDeleteReturnTrueAndFindByIdEmpty() {
-        var post = new Post(-1, "desc", now(), 10000L, user, toyotaSupra,
+        var post = new Post(-1, "desc", now(), 10000L, true, user, toyotaSupra,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post);
         var isDelete = postRepo.delete(post.getId());
@@ -90,11 +90,11 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenSaveAndUpdatePostThenFindUpdated() {
-        var post = new Post(-1, "desc", now(), 10000L, user, toyotaSupra,
+        var post = new Post(-1, "desc", now(), 10000L, true, user, toyotaSupra,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post);
-        var postV2 = new Post(post.getId(), "new desc", now(), 10000L, user, toyotaSupra,
-                Set.of(), Set.of(), Set.of());
+        var postV2 = new Post(post.getId(), "new desc", now(), 10000L, true, user,
+                toyotaSupra, Set.of(), Set.of(), Set.of());
         var isUpdate = postRepo.update(postV2);
         assertThat(isUpdate).isTrue();
         var actualPost = postRepo.findById(post.getId()).get();
@@ -110,9 +110,9 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenGetBrandThenReturnCorrect() {
-        var post1 = new Post(-1, "desc", now(), 10000L, user, toyotaSupra,
+        var post1 = new Post(-1, "desc", now(), 10000L, true, user, toyotaSupra,
                 Set.of(), Set.of(), Set.of());
-        var post2 = new Post(-1, "desc", now(), 10000L, user, bmwX5,
+        var post2 = new Post(-1, "desc", now(), 10000L, true, user, bmwX5,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post1);
         postRepo.save(post2);
@@ -122,9 +122,9 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenGetWithPhotoThenReturnCorrect() {
-        var post1 = new Post(-1, "desc", now(), 10000L, user, toyotaSupra,
+        var post1 = new Post(-1, "desc", now(), 10000L, true, user, toyotaSupra,
                 Set.of(), Set.of(), Set.of());
-        var post2 = new Post(-1, "desc", now(), 10000L, user, bmwX5,
+        var post2 = new Post(-1, "desc", now(), 10000L, true, user, bmwX5,
                 Set.of(), Set.of(), Set.of(file));
         postRepo.save(post1);
         postRepo.save(post2);
@@ -133,13 +133,58 @@ class HibernatePostRepositoryTest {
 
     @Test
     public void whenGetByDayThenReturnCorrect() {
-        var post1 = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L, user, toyotaSupra,
-                Set.of(), Set.of(), Set.of());
-        var post2 = new Post(-1, "desc", now(), 10000L, user, bmwX5,
+        var post1 = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L,
+                true, user, toyotaSupra, Set.of(), Set.of(), Set.of());
+        var post2 = new Post(-1, "desc", now(), 10000L, true, user, bmwX5,
                 Set.of(), Set.of(), Set.of());
         postRepo.save(post1);
         postRepo.save(post2);
         assertThat(postRepo.getLastDay()).isEqualTo(List.of(post2));
+    }
+
+    @Test
+    public void whenGetVisibleThenReturnOnlyVisible() {
+        var post1 = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L,
+                true, user, toyotaSupra, Set.of(), Set.of(), Set.of());
+        var post2 = new Post(-1, "desc", now(), 10000L, false, user, bmwX5,
+                Set.of(), Set.of(), Set.of());
+        var post3 = new Post(-1, "desc", now(), 10000L, true, user2, bmwM5,
+                Set.of(), Set.of(), Set.of());
+        postRepo.save(post1);
+        postRepo.save(post2);
+        postRepo.save(post3);
+        assertThat(postRepo.getVisible()).isEqualTo(List.of(post3, post1));
+    }
+
+    @Test
+    public void whenFindByUserThenReturnCorrect() {
+        var post1 = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L,
+                true, user, toyotaSupra, Set.of(), Set.of(), Set.of());
+        var post2 = new Post(-1, "desc", now(), 10000L, false, user, bmwX5,
+                Set.of(), Set.of(), Set.of());
+        var post3 = new Post(-1, "desc", now(), 10000L, true, user2, bmwM5,
+                Set.of(), Set.of(), Set.of());
+        postRepo.save(post1);
+        postRepo.save(post2);
+        postRepo.save(post3);
+        assertThat(postRepo.findByUser(1)).isEqualTo(List.of(post2, post1));
+        assertThat(postRepo.findByUser(2)).isEqualTo(List.of(post3));
+        assertThat(postRepo.findByUser(3)).isEqualTo(List.of());
+    }
+
+    @Test
+    public void whenHidePostThenCheckThatStateInvisible() {
+        var post = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L,
+                true, user, toyotaSupra, Set.of(), Set.of(), Set.of());
+        postRepo.save(post);
+        assertThat(postRepo.findById(post.getId()).get().isVisibility()).isTrue();
+        assertThat(postRepo.hide(post.getId())).isTrue();
+        assertThat(postRepo.getAll().get(0).isVisibility()).isFalse();
+    }
+
+    @Test
+    public void whenHidePostNotExistThenReturnFalse() {
+        assertThat(postRepo.hide(1)).isFalse();
     }
 
     @Test
@@ -188,7 +233,8 @@ class HibernatePostRepositoryTest {
     public void whenFindByPriceGreater10k() {
         prepareToFindByFilters();
         var from10kPlus = Map.of("fromPrice", "10000");
-        assertThat(postRepo.findByFilter(from10kPlus)).isEqualTo(List.of(toyotaSupraPost, bmwX5Post, hondaAccordPost, bmwM5Post));
+        assertThat(postRepo.findByFilter(from10kPlus)).isEqualTo(
+                List.of(toyotaSupraPost, bmwX5Post, hondaAccordPost, bmwM5Post));
     }
 
     @Test
@@ -202,7 +248,8 @@ class HibernatePostRepositoryTest {
     public void whenFindByPriceLess20k() {
         prepareToFindByFilters();
         var to20k = Map.of("toPrice", "20000");
-        assertThat(postRepo.findByFilter(to20k)).isEqualTo(List.of(toyotaSupraPost, bmwX5Post, hondaAccordPost, bmwM5Post));
+        assertThat(postRepo.findByFilter(to20k)).isEqualTo(
+                List.of(toyotaSupraPost, bmwX5Post, hondaAccordPost, bmwM5Post));
     }
 
     @Test
@@ -222,7 +269,10 @@ class HibernatePostRepositoryTest {
     @Test
     public void whenFindByPriceFrom15kTo16kAndHonda() {
         prepareToFindByFilters();
-        var like15or16kAndHonda = Map.of("fromPrice", "15000", "toPrice", "16000", "brand", "honda");
+        var like15or16kAndHonda = Map.of(
+                "fromPrice", "15000",
+                "toPrice", "16000",
+                "brand", "honda");
         assertThat(postRepo.findByFilter(like15or16kAndHonda)).isEqualTo(List.of(hondaAccordPost));
     }
 
@@ -230,22 +280,25 @@ class HibernatePostRepositoryTest {
     public void whenFindByPriceFrom15kTo16kAndHondaAndWithPhoto() {
         prepareToFindByFilters();
         var like15or16kAndHondaAndPhoto = Map.of("fromPrice", "15000", "toPrice", "16000",
-                                                "brand", "honda", "withoutPhoto", "false");
+                "brand", "honda", "withoutPhoto", "false");
         assertThat(postRepo.findByFilter(like15or16kAndHondaAndPhoto)).isEqualTo(List.of());
     }
 
     private void prepareToFindByFilters() {
-        toyotaSupraPost = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L, user, toyotaSupra,
+        toyotaSupraPost = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 10000L,
+                true, user, toyotaSupra, Set.of(), Set.of(), Set.of(file));
+        bmwX5Post = new Post(-1, "desc", now(), 15000L, true, user, bmwX5,
+                Set.of(), Set.of(), Set.of());
+        hondaAccordPost = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 16000L,
+                true, user, hondaAccord, Set.of(), Set.of(), Set.of());
+        bmwM5Post = new Post(-1, "desc", now(), 20000L, true, user, bmwM5,
                 Set.of(), Set.of(), Set.of(file));
-        bmwX5Post = new Post(-1, "desc", now(), 15000L, user, bmwX5,
-                Set.of(), Set.of(), Set.of());
-        hondaAccordPost = new Post(-1, "desc", now().minusDays(1).minusMinutes(1), 16000L, user, hondaAccord,
-                Set.of(), Set.of(), Set.of());
-        bmwM5Post = new Post(-1, "desc", now(), 20000L, user, bmwM5,
+        var invisible = new Post(-1, "desc", now(), 20000L, false, user, bmwM5,
                 Set.of(), Set.of(), Set.of(file));
         postRepo.save(toyotaSupraPost);
         postRepo.save(bmwX5Post);
         postRepo.save(hondaAccordPost);
         postRepo.save(bmwM5Post);
+        postRepo.save(invisible);
     }
 }

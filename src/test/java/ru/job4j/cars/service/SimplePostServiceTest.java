@@ -53,6 +53,7 @@ class SimplePostServiceTest {
             .description("desc")
             .creationDate(LocalDateTime.now())
             .price(5000)
+            .visibility(true)
             .user(new User(1))
             .car(
                     Car.of()
@@ -158,7 +159,7 @@ class SimplePostServiceTest {
     @Test
     public void whenFindByEmptyFiltersThenCallGetAll() {
         Map<String, String> filters = new HashMap<>(Map.of("brand", "", "model", ""));
-        when(postRepo.getAll()).thenReturn(List.of(post));
+        when(postRepo.getVisible()).thenReturn(List.of(post));
         assertThat(simplePostService.findByFilter(filters)).isEqualTo(List.of(postPreview));
     }
 
@@ -172,13 +173,13 @@ class SimplePostServiceTest {
 
     @Test
     public void whenGetAllThenCallGetAllFromRepoConvertToDtoAndReturn() {
-        when(postRepo.getAll()).thenReturn(List.of(post));
+        when(postRepo.getVisible()).thenReturn(List.of(post));
         assertThat(simplePostService.getAll()).isEqualTo(List.of(postPreview));
     }
 
     @Test
     public void whenGetRecommendationThenReturnCorrected() {
-        when(postRepo.getAll()).thenReturn(List.of(post, post));
+        when(postRepo.getVisible()).thenReturn(List.of(post, post));
         assertThat(simplePostService.getRecommendation(1)).isEqualTo(List.of(postPreview));
     }
 
@@ -186,5 +187,26 @@ class SimplePostServiceTest {
     public void whenGetLastDayThenReturnCorrected() {
         when(postRepo.getLastDay()).thenReturn(List.of(post));
         assertThat(simplePostService.getLastDay()).isEqualTo(List.of(postPreview));
+    }
+
+    @Test
+    public void whenFindByUserThenReturnOwnerPreview() {
+        when(postRepo.findByUser(1)).thenReturn(List.of(post));
+        assertThat(simplePostService.findByUser(1).size()).isEqualTo(1);
+        var ownerPrev = simplePostService.findByUser(1).get(0);
+        assertThat(ownerPrev.getPostPreview()).isEqualTo(postPreview);
+        assertThat(ownerPrev.isVisibility()).isTrue();
+    }
+
+    @Test
+    public void whenHidePostThenRepoReturnTrueAndMethodToo() {
+        when(postRepo.hide(1)).thenReturn(true);
+        assertThat(simplePostService.hide(1)).isTrue();
+    }
+
+    @Test
+    public void whenHidePostThenRepoReturnFalseAndMethodToo() {
+        when(postRepo.hide(1)).thenReturn(false);
+        assertThat(simplePostService.hide(1)).isFalse();
     }
 }

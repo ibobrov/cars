@@ -17,10 +17,7 @@ import ru.job4j.cars.service.PostService;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Controller
 @RequestMapping("/posts")
@@ -76,6 +73,27 @@ public class PostController {
     public String findByFilter(@RequestParam Map<String, String> filter, Model model) {
         model.addAttribute("prevPosts", postService.findByFilter(filter));
         return "posts/catalog";
+    }
+
+    @GetMapping("/user_posts")
+    public String getUserPosts(HttpSession session, Model model) {
+        var user = (User) session.getAttribute("user");
+        if (user == null) {
+            model.addAttribute("message", "User info not found.");
+            return "errors/error-404";
+        }
+        model.addAttribute("prevPosts", postService.findByUser(user.getId()));
+        return "posts/userPosts";
+    }
+
+    @PostMapping("/hide")
+    public String hidePost(@RequestParam int id, HttpSession session, Model model) {
+        var user = (User) session.getAttribute("user");
+        if (user == null || !postService.hide(id)) {
+            model.addAttribute("message", "User or post not found.");
+            return "errors/error-404";
+        }
+        return "redirect:/posts/user_posts";
     }
 
     /**

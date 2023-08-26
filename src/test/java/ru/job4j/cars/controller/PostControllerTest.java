@@ -3,10 +3,7 @@ package ru.job4j.cars.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.multipart.MultipartFile;
-import ru.job4j.cars.dto.FileDto;
-import ru.job4j.cars.dto.NewPostDto;
-import ru.job4j.cars.dto.PostDto;
-import ru.job4j.cars.dto.PostPreview;
+import ru.job4j.cars.dto.*;
 import ru.job4j.cars.model.CarModel;
 import ru.job4j.cars.model.Engine;
 import ru.job4j.cars.model.User;
@@ -123,5 +120,48 @@ class PostControllerTest {
         when(postService.findByFilter(filters)).thenReturn(byFilterList);
         assertThat(postController.findByFilter(filters, model)).isEqualTo("posts/catalog");
         assertThat(model.getAttribute("prevPosts")).isEqualTo(byFilterList);
+    }
+
+    @Test
+    public void whenGetUserPostsThenReturnResult() {
+        var list = List.of(new OwnerPostPreview(null, true));
+        var session = mock(HttpSession.class);
+        when(session.getAttribute("user")).thenReturn(new User(1));
+        when(postService.findByUser(1)).thenReturn(list);
+        assertThat(postController.getUserPosts(session, model)).isEqualTo("posts/userPosts");
+        assertThat(model.getAttribute("prevPosts")).isEqualTo(list);
+    }
+
+    @Test
+    public void whenGetUserPostsThenReturnErrorBecauseUserNotFound() {
+        var session = mock(HttpSession.class);
+        when(session.getAttribute("user")).thenReturn(null);
+        assertThat(postController.getUserPosts(session, model)).isEqualTo("errors/error-404");
+        assertThat(model.getAttribute("message")).isEqualTo("User info not found.");
+    }
+
+    @Test
+    public void whenHidePostThenDoneAndRedirect() {
+        var session = mock(HttpSession.class);
+        when(session.getAttribute("user")).thenReturn(new User(1));
+        when(postService.hide(3)).thenReturn(true);
+        assertThat(postController.hidePost(3, session, model)).isEqualTo("redirect:/posts/user_posts");
+    }
+
+    @Test
+    public void whenHidePostThenReturnErrorBecauseUserNotFound() {
+        var session = mock(HttpSession.class);
+        when(session.getAttribute("user")).thenReturn(null);
+        assertThat(postController.hidePost(3, session, model)).isEqualTo("errors/error-404");
+        assertThat(model.getAttribute("message")).isEqualTo("User or post not found.");
+    }
+
+    @Test
+    public void whenHidePostThenReturnErrorBecauseServiceReturnFalse() {
+        var session = mock(HttpSession.class);
+        when(session.getAttribute("user")).thenReturn(new User(1));
+        when(postService.hide(3)).thenReturn(false);
+        assertThat(postController.hidePost(3, session, model)).isEqualTo("errors/error-404");
+        assertThat(model.getAttribute("message")).isEqualTo("User or post not found.");
     }
 }

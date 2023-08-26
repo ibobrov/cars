@@ -31,10 +31,44 @@ class AuthorizationFilterTest {
     }
 
     @Test
-    public void whenFilterRedirectBecauseUserNotAuthorized() {
+    public void whenCreatePostAndFilterRedirectBecauseUserNotAuthorized() {
         var redirect = ArgumentCaptor.forClass(String.class);
         var thrown = catchThrowable(() -> {
             when(request.getRequestURI()).thenReturn("/posts/create");
+            var session = mock(HttpSession.class);
+            when(request.getSession()).thenReturn(session);
+            when(session.getAttribute("user")).thenReturn(null);
+            when(request.getContextPath()).thenReturn("");
+            doThrow(new MockitoException("test")).when(response).sendRedirect(redirect.capture());
+            filter.doFilter(request, response, chain);
+        });
+        assertThat(thrown).isInstanceOf(MockitoException.class);
+        assertThat(thrown.getMessage()).isEqualTo("test");
+        assertThat(redirect.getValue()).isEqualTo("/users/login");
+    }
+
+    @Test
+    public void whenGetUserPostsAndFilterRedirectBecauseUserNotAuthorized() {
+        var redirect = ArgumentCaptor.forClass(String.class);
+        var thrown = catchThrowable(() -> {
+            when(request.getRequestURI()).thenReturn("/posts/user_posts");
+            var session = mock(HttpSession.class);
+            when(request.getSession()).thenReturn(session);
+            when(session.getAttribute("user")).thenReturn(null);
+            when(request.getContextPath()).thenReturn("");
+            doThrow(new MockitoException("test")).when(response).sendRedirect(redirect.capture());
+            filter.doFilter(request, response, chain);
+        });
+        assertThat(thrown).isInstanceOf(MockitoException.class);
+        assertThat(thrown.getMessage()).isEqualTo("test");
+        assertThat(redirect.getValue()).isEqualTo("/users/login");
+    }
+
+    @Test
+    public void whenHidePostAndFilterRedirectBecauseUserNotAuthorized() {
+        var redirect = ArgumentCaptor.forClass(String.class);
+        var thrown = catchThrowable(() -> {
+            when(request.getRequestURI()).thenReturn("/posts/hide");
             var session = mock(HttpSession.class);
             when(request.getSession()).thenReturn(session);
             when(session.getAttribute("user")).thenReturn(null);

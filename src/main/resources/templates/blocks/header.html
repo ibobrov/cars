@@ -33,7 +33,7 @@
       <div th:if="${user.login != 'Guest'}">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link link-body-emphasis px-2" th:text="${user.login}"></a>
+            <a class="nav-link link-body-emphasis px-2" th:text="${user.login}" th:href="@{/posts/user_posts}"></a>
           </li>
           <li class="nav-item">
             <a class="nav-link link-body-emphasis px-2" th:href="@{/users/logout}">Sign out</a>
