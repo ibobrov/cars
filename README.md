@@ -1,7 +1,7 @@
-# Cars
-
 [![Java CI with Maven](https://github.com/ibobrov/cars/actions/workflows/maven.yml/badge.svg)](https://github.com/ibobrov/cars/actions/workflows/maven.yml)
 [![codecov](https://codecov.io/github/ibobrov/cars/branch/master/graph/badge.svg?token=I2vmQXZef5)](https://codecov.io/github/ibobrov/cars)
+
+# Cars
 
 The cars is a web application focused on the back end of a car sales/buy website. In particular, the use of the Hibernate framework.
 I wrote the layout adapted for phones and tablets. All layouts were used under a free license.
